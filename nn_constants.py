@@ -10,3 +10,18 @@ max_am_objMse = max_am_epoch
 max_stack_matrEl = 256
 max_stack_otherOp = 4
 bc_bufLen = 256 * 2
+
+
+# команды для operations
+RELU = 1
+RELU_DERIV = 2
+SIGMOID = 3
+SIGMOID_DERIV = 4
+TRESHOLD_FUNC = 5
+TRESHOLD_FUNC_DERIV = 6
+LEAKY_RELU = 7
+LEAKY_RELU_DERIV = 8
+INIT_W_HE = 9
+INIT_W_GLOROT = 10
+DEBUG = 11
+DEBUG_STR = 12
