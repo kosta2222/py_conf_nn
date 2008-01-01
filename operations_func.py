@@ -2,6 +2,7 @@ from nn_constants import RELU_DERIV, RELU, TRESHOLD_FUNC, TRESHOLD_FUNC_DERIV, L
 SIGMOID, SIGMOID_DERIV, DEBUG, DEBUG_STR, INIT_W_HE, INIT_W_GLOROT
 import numpy as np
 import math
+np.random.seed(40)
 # операции для функций активаций и их производных
 def operations( op,  a,  b,  c,  d,  str):
     if op == RELU:

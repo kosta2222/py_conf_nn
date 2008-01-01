@@ -2,7 +2,10 @@ from cv import cross_validation
 from serial_deserial_func import compil_serializ
 from nn_app import train, initiate_layers, get_min_square_err
 from NN_params import NnParams   # импортруем параметры сети
+from nn_constants import bc_bufLen
 #----------------------Основные параметры сети----------------------------------
+
+
 # создать параметры сети
 def create_nn_params():
     return NnParams()
@@ -12,7 +15,7 @@ nn_params.outputNeurons = 1
 nn_params.lr = None
 nn_map = (2, 3, 1)
 
-def learn(l_r, epochcs, train_set:list, target_set:list):
+def learn(b_c:list, nn_params, l_r, epochcs, train_set:list, target_set:list):
     error = 0.0
     iteration: int = 0
     n_epochs = []
@@ -32,7 +35,7 @@ def learn(l_r, epochcs, train_set:list, target_set:list):
             break
         iteration+=1
     cross_validation(nn_params, train_set, target_set)
-    compil_serializ(nn_params.list_,len(nn_map)-1,"wei_wei")
+    compil_serializ(b_c, nn_params.list_,len(nn_map)-1,"wei_wei")
 
 import unittest as u
 class TestLay(u.TestCase):
@@ -41,9 +44,9 @@ class TestLay(u.TestCase):
     def test_7(self):
         X = [[1, 1], [1, 0], [0, 1], [0, 0]]
         Y = [[1], [1], [1], [0]]
-
+        b_c = [0] * bc_bufLen  # буффер для сериализации матричных элементов и входов
         initiate_layers(nn_params, nn_map, len(nn_map))
-        learn(0.07, 7, X, Y)
+        learn(b_c,nn_params, 0.7, 7, X, Y)
     # def test_8(self):
     #     X = [[1, 1], [1, 0], [0, 1], [0, 0]]
     #     out_nn = [[1], [1], [1], [0]]

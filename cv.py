@@ -13,7 +13,7 @@ def cross_validation(nn_params:NnParams, X_test: list, Y_test: list):
     """
     scores=[0] * max_rows_orOut
     res = 0
-    # out_nn=None
+    out_nn=None
     res_acc = 1
     rows = len(X_test)
     for i in range(rows):

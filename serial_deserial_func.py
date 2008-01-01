@@ -2,6 +2,7 @@ from work_with_arr import copy_matrixAsStaticSquare_toRibon
 from nn_constants import bc_bufLen, max_in_nn, max_rows_orOut
 from Nn_lay import nnLay
 import struct as st
+from NN_params import NnParams
 #----------------------сериализации/десериализации------------------------------
 # байт-коды для сериализации/десериализации-загрузка входов/выходов,загрузка элементов матрицы,сворачивание то есть создания ядра,остановка ВМ
 push_i = 0
@@ -9,16 +10,18 @@ push_fl = 1
 make_kernel = 2
 stop = 3
 
-b_c=[0] * bc_bufLen  # буффер для сериализации матричных элементов и входов/ds[jljd
-def py_pack (op_i, val_i_or_fl):
+p=0
+
+
+def py_pack (b_c:list, op_i, val_i_or_fl):
     """
     Добавляет в b_c буффер байт-комманды и сериализованные матричные числа как байты
     :param op_i: байт-комманда
     :param val_i_or_fl: число для серелизации - матричный элемент или количество входов выходов
     :return: следующий индекс куда можно записать команду stop
     """
+    global p
     ops_name = ['push_i', 'push_fl', 'make_kernel', 'stop']
-    p = 0
     if op_i == push_fl:
         b_c[p] = st.pack('B', push_fl)
         p+=1
@@ -31,17 +34,19 @@ def py_pack (op_i, val_i_or_fl):
         b_c[p] = st.pack('B', val_i_or_fl)
         p+=1
     elif op_i == make_kernel:
-        b_c.append(st.pack('B', make_kernel))
+        b_c[p] = st.pack('B', make_kernel)
         p+=1
     return p
-def  dump_bc(f_name, p):
+def  dump_bc(b_c, f_name):
+  global p
   b_c[p] = stop.to_bytes(1,"little")
+  p+=1
   with open(f_name,'wb') as f:
-     for i in b_c:
-         f.write(i)
+     for i in range(p):
+         f.write(b_c[i])
 
 
-def make_kernel_f(list_:list, lay_pos, matrix_el_st:list,  ops_st:list,  sp_op):
+def make_kernel_f(nn_params:NnParams, list_:list, lay_pos, matrix_el_st:list,  ops_st:list,  sp_op):
     """
     Создает  ядро в векторе слоев
     :param list_: ссылка на вектор слоев
@@ -88,7 +93,6 @@ def vm_to_deserialize(list_:list, bin_buf:list):
             ip+=1
             ops_st[sp_op] = bin_buf[ip]
             # break
-
         # загружаем на стек элементы матриц
         elif op == push_fl:
             i_0=ip + 1
@@ -100,7 +104,6 @@ def vm_to_deserialize(list_:list, bin_buf:list):
             matrix_el_st[sp_ma] = arg[0]
             ip += 4
             # break
-
         # создаем одно ядро в массиве
         elif op == make_kernel:
             make_kernel_f(list_, n_lay, matrix_el_st, ops_st, sp_op)
@@ -110,7 +113,6 @@ def vm_to_deserialize(list_:list, bin_buf:list):
             sp_op = -1
             sp_ma = -1
             # break
-
         # показываем на следующую инструкцию
         ip+=1
         op = bin_buf[ip]
@@ -134,11 +136,10 @@ def  deserializ( list_:list, f_name:str):
         j+=1
     # разборка байт-кода
     vm_to_deserialize(list_, bin_buf)
-
     _0_("vm_deserializ")
 
 
-def compil_serializ(list_:nnLay, len_lst, f_name):
+def compil_serializ(b_c:list, list_:nnLay, len_lst, f_name):
     in_=0
     out=0
     p=0
@@ -146,13 +147,13 @@ def compil_serializ(list_:nnLay, len_lst, f_name):
     for i in range(len_lst):
         in_=list_[i].in_
         out=list_[i].out
-        py_pack(push_i,in_)
-        py_pack(push_i,out)
-        copy_matrixAsStaticSquare_toRibon(list_[i].matrix, matrix,in_,out)
+        py_pack(b_c, push_i,in_)
+        py_pack(b_c, push_i,out)
+        copy_matrixAsStaticSquare_toRibon(list_[i].matrix, matrix, in_, out)
         for j in range(in_ * out):
-            py_pack(push_fl, matrix[j])
-        p=py_pack(make_kernel, 0)
-    dump_bc(f_name, p)
+            py_pack(b_c, push_fl, matrix[j])
+        py_pack(b_c, make_kernel, 0)
+    dump_bc(b_c, f_name)
 
 
 
