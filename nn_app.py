@@ -24,7 +24,7 @@ def calc_out_error(nn_params:NnParams,objLay:nnLay, targets:list):
     for row in range(objLay.out):
         nn_params.out_errors[row] = (objLay.hidden[row] - targets[row]) * operations(RELU_DERIV,objLay.cost_signals[row],0,0,0,"")
 
-def calc_hid_error(objLay:nnLay, essential_gradients:list, entered_vals:list,i = 0):
+def calc_hid_error(objLay:nnLay, essential_gradients:list, entered_vals:list):
     for elem in range(objLay.in_):
         for row in range(objLay.out):
             objLay.errors[elem]+=essential_gradients[row] * objLay.matrix[row][elem]  * operations(RELU_DERIV, entered_vals[elem], 0, 0, 0, "")
@@ -50,13 +50,13 @@ def get_hidden(objLay:nnLay):
 def get_essential_gradients(objLay:nnLay):
     return objLay.errors
 
-def calc_hid_zero_lay(zeroLay:nnLay,essential_gradients:list, i = 0):
+def calc_hid_zero_lay(zeroLay:nnLay,essential_gradients:list):
     for elem in range(zeroLay.in_):
         for row in range(zeroLay.out):
             zeroLay.errors[elem]+=essential_gradients[row] * zeroLay.matrix[row][elem]
     print("in calc_hid_zero_lay",zeroLay.errors)
 
-def upd_matrix(nn_params:NnParams, objLay:nnLay, entered_vals, i = 0):
+def upd_matrix(nn_params:NnParams, objLay:nnLay, entered_vals):
     for row in range(objLay.out):
         for elem in range(objLay.in_):
             objLay.matrix[row][elem]-= nn_params.lr * objLay.errors[elem] * entered_vals[elem]
@@ -125,14 +125,14 @@ def backpropagate(nn_params:NnParams):
     calc_out_error(nn_params, nn_params.list_[nn_params.nlCount - 1],nn_params.targets)
     for i in range(nn_params.nlCount - 1, 0, -1):
         if i == nn_params.nlCount - 1:
-           calc_hid_error(nn_params.list_[i], nn_params.out_errors, get_cost_signals(nn_params.list_[i - 1]), i)
+           calc_hid_error(nn_params.list_[i], nn_params.out_errors, get_cost_signals(nn_params.list_[i - 1]))
         else:
-            calc_hid_error(nn_params.list_[i], get_essential_gradients(nn_params.list_[i + 1]), get_cost_signals(nn_params.list_[i - 1]), i)
-    calc_hid_zero_lay(nn_params.list_[0], get_essential_gradients(nn_params.list_[1]), 0)
+            calc_hid_error(nn_params.list_[i], get_essential_gradients(nn_params.list_[i + 1]), get_cost_signals(nn_params.list_[i - 1]))
+    calc_hid_zero_lay(nn_params.list_[0], get_essential_gradients(nn_params.list_[1]))
     for i in range(nn_params.nlCount - 1, 0, -1):
-        upd_matrix(nn_params, nn_params.list_[i],  get_cost_signals(nn_params.list_[i - 1]), i)
+        upd_matrix(nn_params, nn_params.list_[i],  get_cost_signals(nn_params.list_[i - 1]))
 
-    upd_matrix(nn_params, nn_params.list_[0], nn_params.inputs, 0)
+    upd_matrix(nn_params, nn_params.list_[0], nn_params.inputs)
 
 
 
@@ -145,6 +145,7 @@ def set_io(objLay:nnLay, inputs, outputs):
     for row in range(outputs):
         for elem in range(inputs):
             objLay.matrix[row][elem] =operations(INIT_W_HE, inputs, 0, 0, 0, "")
+
     print("in set_io matrix", objLay.matrix)
 
 def initiate_layers(nn_params:NnParams,network_map:tuple,size):

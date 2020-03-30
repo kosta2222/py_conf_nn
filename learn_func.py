@@ -2,6 +2,7 @@ from cv import cross_validation
 from serial_deserial_func import compil_serializ
 from nn_app import train, initiate_layers, get_min_square_err
 from NN_params import NnParams   # импортруем параметры сети
+from serial_deserial_func import deserializ
 from nn_constants import bc_bufLen
 #----------------------Основные параметры сети----------------------------------
 
@@ -9,11 +10,8 @@ from nn_constants import bc_bufLen
 # создать параметры сети
 def create_nn_params():
     return NnParams()
-nn_params = create_nn_params()
-nn_params.inputNeurons = 2
-nn_params.outputNeurons = 1
-nn_params.lr = None
-nn_map = (2, 3, 1)
+
+
 
 def learn(b_c:list, nn_params, l_r, epochcs, train_set:list, target_set:list):
     error = 0.0
@@ -35,25 +33,29 @@ def learn(b_c:list, nn_params, l_r, epochcs, train_set:list, target_set:list):
             break
         iteration+=1
     cross_validation(nn_params, train_set, target_set)
-    compil_serializ(b_c, nn_params.list_,len(nn_map)-1,"wei_wei")
+    # compil_serializ(b_c, nn_params.list_,len(nn_map)-1,"wei_wei")
 
 import unittest as u
 class TestLay(u.TestCase):
-    # def setUp(self) -> None:
-    #     self.lay=create_one_lay()
+    def setUp(self) -> None:
+         self.nn_params = create_nn_params()
     def test_7(self):
+
+
+        nn_map = (2, 3, 4, 1)
+
         X = [[1, 1], [1, 0], [0, 1], [0, 0]]
         Y = [[1], [1], [1], [0]]
         b_c = [0] * bc_bufLen  # буффер для сериализации матричных элементов и входов
-        initiate_layers(nn_params, nn_map, len(nn_map))
-        learn(b_c,nn_params, 0.7, 7, X, Y)
-    # def test_8(self):
-    #     X = [[1, 1], [1, 0], [0, 1], [0, 0]]
-    #     out_nn = [[1], [1], [1], [0]]
-    #     Y = [[1], [1], [1], [0]]
-    #     cross_validation(X, Y)
+        initiate_layers(self.nn_params, nn_map, len(nn_map))
+        learn(b_c,self.nn_params, 0.07, 7, X, Y)
+        compil_serializ(b_c, self.nn_params.list_, len(nn_map) - 1, "weight2" )
+
+    def test_8(self):
+       nn_params1=create_nn_params()
+       deserializ(nn_params1, nn_params1.list_, "weight2")
+       for i in nn_params1.list_:
+          print(i.matrix)
     # def test_9(self):
-    #     deserializ(nn_params.list_, "wei")
-    #     for i in nn_params.list_:
-    #         print(i.matrix)
+
 

@@ -1,8 +1,9 @@
 from work_with_arr import copy_matrixAsStaticSquare_toRibon
-from nn_constants import bc_bufLen, max_in_nn, max_rows_orOut
+from nn_constants import bc_bufLen, max_in_nn, max_rows_orOut, max_stack_matrEl, max_stack_otherOp
 from Nn_lay import nnLay
 import struct as st
 from NN_params import NnParams
+from util_func import _0_
 #----------------------сериализации/десериализации------------------------------
 # байт-коды для сериализации/десериализации-загрузка входов/выходов,загрузка элементов матрицы,сворачивание то есть создания ядра,остановка ВМ
 push_i = 0
@@ -66,7 +67,7 @@ def make_kernel_f(nn_params:NnParams, list_:list, lay_pos, matrix_el_st:list,  o
     _0_("make_kernel")
 
 
-def vm_to_deserialize(list_:list, bin_buf:list):
+def vm_to_deserialize(nn_params:NnParams, list_:list, bin_buf:list):
     """
     Элемент виртуальной машины чтобы в вектор list_ матриц весов
     записать десериализированные из файла матрицы весов и смочь
@@ -106,7 +107,7 @@ def vm_to_deserialize(list_:list, bin_buf:list):
             # break
         # создаем одно ядро в массиве
         elif op == make_kernel:
-            make_kernel_f(list_, n_lay, matrix_el_st, ops_st, sp_op)
+            make_kernel_f(nn_params, list_, n_lay, matrix_el_st, ops_st, sp_op)
             # переходим к следующему индексу ядра
             n_lay+=1
             # зачищаем стеки
@@ -125,7 +126,7 @@ def vm_to_deserialize(list_:list, bin_buf:list):
     _0_("vm")
 
 
-def  deserializ( list_:list, f_name:str):
+def deserializ(nn_params:NnParams, list_:list, f_name:str):
     bin_buf = [0] * bc_bufLen
     buf_str = b''
     with open(f_name, 'rb') as f:
@@ -135,7 +136,7 @@ def  deserializ( list_:list, f_name:str):
         bin_buf[j] = i
         j+=1
     # разборка байт-кода
-    vm_to_deserialize(list_, bin_buf)
+    vm_to_deserialize(nn_params, list_, bin_buf)
     _0_("vm_deserializ")
 
 
