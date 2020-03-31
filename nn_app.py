@@ -12,7 +12,6 @@ from operations_func import operations
 from util_func import _0_
 # import pdb
 # pdb.set_trace()
-
 def calc_out_error(nn_params:NnParams,objLay:nnLay, targets:list):
     """
     Вычислить градиентную ошибку на выходном слое,записать этот параметр-вектор в обьект nnLay выходного слоя
@@ -24,6 +23,7 @@ def calc_out_error(nn_params:NnParams,objLay:nnLay, targets:list):
     for row in range(objLay.out):
         nn_params.out_errors[row] = (objLay.hidden[row] - targets[row]) * operations(RELU_DERIV,objLay.cost_signals[row],0,0,0,"")
 
+
 def calc_hid_error(objLay:nnLay, essential_gradients:list, entered_vals:list):
     for elem in range(objLay.in_):
         for row in range(objLay.out):
@@ -34,21 +34,24 @@ def calc_hid_error(objLay:nnLay, essential_gradients:list, entered_vals:list):
     # print("in calc_hid_error matrix",objLay.matrix)
 
 
-
 def get_min_square_err(out_nn:list,teacher_answ:list,n):
     sum=0
     for row in range(n):
         sum+=math.pow((out_nn[row] - teacher_answ[row]),2)
     return sum / n
 
+
 def get_cost_signals(objLay:nnLay):
     return objLay.cost_signals
+
 
 def get_hidden(objLay:nnLay):
     return objLay.hidden
 
+
 def get_essential_gradients(objLay:nnLay):
     return objLay.errors
+
 
 def calc_hid_zero_lay(zeroLay:nnLay,essential_gradients:list):
     for elem in range(zeroLay.in_):
@@ -56,11 +59,13 @@ def calc_hid_zero_lay(zeroLay:nnLay,essential_gradients:list):
             zeroLay.errors[elem]+=essential_gradients[row] * zeroLay.matrix[row][elem]
     print("in calc_hid_zero_lay",zeroLay.errors)
 
+
 def upd_matrix(nn_params:NnParams, objLay:nnLay, entered_vals):
     for row in range(objLay.out):
         for elem in range(objLay.in_):
             objLay.matrix[row][elem]-= nn_params.lr * objLay.errors[elem] * entered_vals[elem]
     print("in upd_matrix matrix state",objLay.matrix)
+
 
 def feed_forwarding(nn_params:NnParams,ok:bool, debug:int):
     make_hidden(nn_params.list_[0],nn_params.inputs,debug)
@@ -73,6 +78,15 @@ def feed_forwarding(nn_params:NnParams,ok:bool, debug:int):
     else:
          backpropagate(nn_params)
 
+def feed_forwarding_on_contrary(nn_params:NnParams, ok:bool, debug:int):
+    make_hidden(nn_params.list_[nn_params.nlCount - 1], nn_params.inputs, debug)
+    for i in range(nn_params.nlCount - 2, -1, -1):
+        make_hidden(nn_params.list_[i], get_hidden(nn_params.list_[i - 1]), debug)
+    if ok:
+        for i in range(nn_params.inputNeurons):
+            print("%d item val %f"%(i + 1,nn_params.list_[0].hidden[i]))
+        return nn_params.list_[0].hidden
+
 # для теста, создать один слой
 def create_one_lay():
     lay=nnLay()
@@ -81,17 +95,27 @@ def create_one_lay():
     lay.matrix=[[-1,1,4],[3,4,-7]]
     return lay
 
+
 def train(nn_params:NnParams,in_:list,targ:list, debug):
     copy_vector(in_,nn_params.inputs,nn_params.inputNeurons)
     copy_vector(targ,nn_params.targets,nn_params.outputNeurons)
     # print("in train in_ vec",in_)
     # print("in train targ vec",targ)
-    feed_forwarding(nn_params,False, 1)
+    feed_forwarding(nn_params,False, debug)
 
-def answer_nn(nn_params:NnParams,in_:list, debug):
+
+def answer_nn_direct(nn_params:NnParams,in_:list, debug):
+    out_nn = None
     copy_vector(in_,nn_params.inputs,nn_params.inputNeurons)
     # print("in answer_nn in_ vec",in_)
-    out_nn=feed_forwarding(nn_params,True, 1)
+    out_nn=feed_forwarding(nn_params,True, debug)
+    return out_nn
+
+def answer_nn_direct_on_contrary(nn_params:NnParams,in_:list, debug):
+    out_nn = None
+    copy_vector(in_,nn_params.inputs,nn_params.outputNeurons)
+    # print("in answer_nn in_ vec",in_)
+    out_nn=feed_forwarding_on_contrary(nn_params,True, debug)
     return out_nn
 
 # Получить вектор входов, сделать матричный продукт и матричный продукт пропустить через функцию активации,
@@ -113,6 +137,8 @@ def make_hidden(objLay:nnLay, inputs, debug):
     print("in make_hidden e",objLay.cost_signals)
     print("in make_hidden h",objLay.hidden)
     # print("in make_hidden matrix state",objLay.matrix)
+
+
 """
 def backpropagate1():
     calc_out_error(nn_params.list_[nn_params.nlCount - 1], nn_params.targets)
@@ -121,6 +147,8 @@ def backpropagate1():
     upd_matrix(nn_params.list_[1],  get_cost_signals(nn_params.list_[1 - 1]))
     upd_matrix(nn_params.list_[0], nn_params.inputs)
 """
+
+
 def backpropagate(nn_params:NnParams):
     calc_out_error(nn_params, nn_params.list_[nn_params.nlCount - 1],nn_params.targets)
     for i in range(nn_params.nlCount - 1, 0, -1):
@@ -131,10 +159,7 @@ def backpropagate(nn_params:NnParams):
     calc_hid_zero_lay(nn_params.list_[0], get_essential_gradients(nn_params.list_[1]))
     for i in range(nn_params.nlCount - 1, 0, -1):
         upd_matrix(nn_params, nn_params.list_[i],  get_cost_signals(nn_params.list_[i - 1]))
-
     upd_matrix(nn_params, nn_params.list_[0], nn_params.inputs)
-
-
 
 
 # заполнить матрицу весов рандомными значениями по He, исходя из количесва входов и выходов,
@@ -145,8 +170,8 @@ def set_io(objLay:nnLay, inputs, outputs):
     for row in range(outputs):
         for elem in range(inputs):
             objLay.matrix[row][elem] =operations(INIT_W_HE, inputs, 0, 0, 0, "")
-
     print("in set_io matrix", objLay.matrix)
+
 
 def initiate_layers(nn_params:NnParams,network_map:tuple,size):
     """
@@ -166,8 +191,3 @@ def initiate_layers(nn_params:NnParams,network_map:tuple,size):
         in_ = network_map[i]
         out = network_map[i + 1]
         set_io(nn_params.list_[i], in_, out)
-
-
-
-
-

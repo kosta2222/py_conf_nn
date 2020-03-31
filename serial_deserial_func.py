@@ -10,10 +10,7 @@ push_i = 0
 push_fl = 1
 make_kernel = 2
 stop = 3
-
 p=0
-
-
 def py_pack (b_c:list, op_i, val_i_or_fl):
     """
     Добавляет в b_c буффер байт-комманды и сериализованные матричные числа как байты
@@ -45,8 +42,6 @@ def  dump_bc(b_c, f_name):
   with open(f_name,'wb') as f:
      for i in range(p):
          f.write(b_c[i])
-
-
 def make_kernel_f(nn_params:NnParams, list_:list, lay_pos, matrix_el_st:list,  ops_st:list,  sp_op):
     """
     Создает  ядро в векторе слоев
@@ -65,8 +60,6 @@ def make_kernel_f(nn_params:NnParams, list_:list, lay_pos, matrix_el_st:list,  o
         for elem in range(in_):
             list_[lay_pos].matrix[row][elem] = matrix_el_st[row * elem]   # десериализированная матрица
     _0_("make_kernel")
-
-
 def vm_to_deserialize(nn_params:NnParams, list_:list, bin_buf:list):
     """
     Элемент виртуальной машины чтобы в вектор list_ матриц весов
@@ -124,8 +117,6 @@ def vm_to_deserialize(nn_params:NnParams, list_:list, bin_buf:list):
     # находим количество выходов когда образовали сеть
     nn_params.outputNeurons=nn_params.list_[nn_params.nlCount-1].out
     _0_("vm")
-
-
 def deserializ(nn_params:NnParams, list_:list, f_name:str):
     bin_buf = [0] * bc_bufLen
     buf_str = b''
@@ -138,8 +129,6 @@ def deserializ(nn_params:NnParams, list_:list, f_name:str):
     # разборка байт-кода
     vm_to_deserialize(nn_params, list_, bin_buf)
     _0_("vm_deserializ")
-
-
 def compil_serializ(b_c:list, list_:nnLay, len_lst, f_name):
     in_=0
     out=0
@@ -155,7 +144,4 @@ def compil_serializ(b_c:list, list_:nnLay, len_lst, f_name):
             py_pack(b_c, push_fl, matrix[j])
         py_pack(b_c, make_kernel, 0)
     dump_bc(b_c, f_name)
-
-
-
 #----------------------------------------------------------------------

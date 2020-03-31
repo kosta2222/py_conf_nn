@@ -1,5 +1,5 @@
 from nn_constants import max_rows_orOut
-from nn_app import answer_nn
+from nn_app import answer_nn_direct
 from NN_params import NnParams
 k = 0
 def cross_validation(nn_params:NnParams, X_test: list, Y_test: list):
@@ -20,7 +20,7 @@ def cross_validation(nn_params:NnParams, X_test: list, Y_test: list):
         x_test = X_test[i]
         y_test = Y_test[i]
         print("in cross val x_test",x_test)
-        out_nn=answer_nn(nn_params, x_test, 1)
+        out_nn=answer_nn_direct(nn_params, x_test, 1)
         print("in cross val out_nn",out_nn)
         res=check_oneHotVecs(scores, out_nn, y_test, len(y_test))
     res_acc=calc_accur(scores,rows)
