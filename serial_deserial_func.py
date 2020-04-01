@@ -78,7 +78,6 @@ def vm_to_deserialize(nn_params:NnParams, list_:list, bin_buf:list):
     :param bin_buf: список байт - комманд из файла
     :return:
     """
-    print("in vm_to_deserialize")
     ops_name =['push_i', 'push_fl', 'make_kernel', 'stop']
     matrix_el_st = [0] * max_stack_matrEl # стек для временного размещения элементов матриц из файла потом этот стек
     # сворачиваем в матрицу слоя после команды make_kernel
@@ -92,12 +91,10 @@ def vm_to_deserialize(nn_params:NnParams, list_:list, bin_buf:list):
     op = bin_buf[ip]
     while (op != stop):
         # загружаем на стек количество входов и выходов ядра
-        print("op",ops_name[op])
         if  op == push_i:
             sp_op+=1
             ip+=1
             ops_st[sp_op] = bin_buf[ip]
-            print("int",bin_buf[ip])
             # break
         # загружаем на стек элементы матриц
         elif op == push_fl:
@@ -126,7 +123,6 @@ def vm_to_deserialize(nn_params:NnParams, list_:list, bin_buf:list):
         op = bin_buf[ip]
     # также подсчитаем сколько у наc ядер
     nn_params.nlCount = n_lay
-    print("in vm_to_deserialize nlCount",nn_params.nlCount)
     # находим количество входов
     nn_params.inputNeurons=(nn_params.list_[0].in_)  #-1  # -1 зависит от биасов
     # находим количество выходов когда образовали сеть
@@ -159,7 +155,6 @@ def compil_serializ(b_c:list, list_:nnLay, len_lst, f_name):
         py_pack(b_c, push_i,in_)
         py_pack(b_c, push_i,out)
         copy_matrixAsStaticSquare_toRibon(list_[i].matrix, matrix, in_, out)
-        print("in compil_serializ after copy_matrixAsStaticSquare_toRibon",matrix)
         for j in range(in_ * out):
             py_pack(b_c, push_fl, matrix[j])
         py_pack(b_c, make_kernel, 0)

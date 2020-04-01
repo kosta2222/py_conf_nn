@@ -55,5 +55,5 @@ class TestLay(u.TestCase):
        for i in nn_params1.list_:
           print(i.matrix)
        print(answer_nn_direct(nn_params1, [1, 1], 1))
-       answer_nn_direct_on_contrary(nn_params1, [1], 1)
+       answer_nn_direct_on_contrary(nn_params1, [0], 1)
     # def test_9(self):

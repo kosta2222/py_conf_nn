@@ -79,9 +79,10 @@ def feed_forwarding(nn_params:NnParams,ok:bool, debug:int):
          backpropagate(nn_params)
 
 def feed_forwarding_on_contrary(nn_params:NnParams, ok:bool, debug:int):
-    make_hidden(nn_params.list_[nn_params.nlCount - 1 ], nn_params.inputs, debug)
+    make_hidden_on_contrary(nn_params.list_[nn_params.nlCount - 1 ], nn_params.inputs, debug)
+    print("in feed_forwarding_on_contrary nn_params.nlCount - 1.out",nn_params.list_[nn_params.nlCount - 1 ].out)
     for i in range(nn_params.nlCount - 2, -1, -1):
-        make_hidden(nn_params.list_[i], get_hidden(nn_params.list_[i + 1]), debug)
+        make_hidden_on_contrary(nn_params.list_[i], get_hidden(nn_params.list_[i + 1]), debug)
     if ok:
         for i in range(nn_params.inputNeurons):
             print("%d item val %f"%(i + 1,nn_params.list_[0].hidden[i]))
@@ -120,7 +121,8 @@ def answer_nn_direct_on_contrary(nn_params:NnParams,in_:list, debug):
 
 # Получить вектор входов, сделать матричный продукт и матричный продукт пропустить через функцию активации,
 # записать этот вектор в параметр слоя сети(hidden)
-def make_hidden(objLay:nnLay, inputs, debug):
+def make_hidden(objLay:nnLay, inputs:list, debug):
+    # print("in make_hidden inputs",inputs)
     tmp_v = 0
     val = 0
     for row in range(objLay.out):
@@ -128,7 +130,7 @@ def make_hidden(objLay:nnLay, inputs, debug):
             # if elem==1:
             #     tmp_v+=objLay.matrix[row][1]
             # else:
-                tmp_v+=objLay.matrix[row][elem] * inputs[elem]
+            tmp_v+=objLay.matrix[row][elem] * inputs[elem]
         objLay.cost_signals[row] = tmp_v
         val = operations(RELU,tmp_v, 1, 0, 0, "")
         objLay.hidden[row] = val
@@ -139,6 +141,28 @@ def make_hidden(objLay:nnLay, inputs, debug):
     # print("in make_hidden matrix state",objLay.matrix)
 
 
+def make_hidden_on_contrary(objLay:nnLay, inputs:list, debug):
+    print("in make_hidden_on_contrary ")
+    print("inputs",inputs)
+    tmp_v = 0
+    val = 0
+    print("in_",objLay.in_,"\nout",objLay.out)
+    print("matrix",objLay.matrix)
+    for elem in range(objLay.in_):
+        print("elem",elem)
+        for row in range(objLay.out):
+            # if elem==1:
+            #     tmp_v+=objLay.matrix[row][1]
+            # else:
+            tmp_v+=objLay.matrix[row][elem] * inputs[row]
+            print("tmp_v",tmp_v)
+        objLay.cost_signals[elem] = tmp_v
+        val = operations(RELU,tmp_v, 1, 0, 0, "")
+        objLay.hidden[elem] = val
+        tmp_v = 0
+        val = 0
+    print("in make_hidden e",objLay.cost_signals)
+    print("in make_hidden h",objLay.hidden)
 """
 def backpropagate1():
     calc_out_error(nn_params.list_[nn_params.nlCount - 1], nn_params.targets)
