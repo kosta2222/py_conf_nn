@@ -17,8 +17,8 @@ def learn(b_c:list, nn_params, l_r, epochcs, train_set:list, target_set:list):
     n_mse = []
     nn_params.lr = l_r
     acc = 0
-    acc_shureness =75
-    while (iteration < epochcs):
+    acc_shureness = 100
+    while True:  #(iteration < epochcs):
         print("epocha:", iteration)
         for i in range(len(target_set)):
             X = train_set[i]
@@ -28,12 +28,13 @@ def learn(b_c:list, nn_params, l_r, epochcs, train_set:list, target_set:list):
             train(nn_params, X, Y, 1)
             mse = get_min_square_err(nn_params.list_[nn_params.nlCount - 1].hidden, Y, nn_params.outputNeurons)
             print("in learn mse",mse)
-        if mse == 0:
+        # if mse == 0:
             break
         acc = cross_validation(nn_params, train_set, target_set)
         if acc == acc_shureness:
             break
         iteration+=1
+    print("***CV***")
     cross_validation(nn_params, train_set, target_set)
     # compil_serializ(b_c, nn_params.list_,len(nn_map)-1,"wei_wei")
 
@@ -49,7 +50,7 @@ class TestLay(u.TestCase):
         Y_and = [[1], [0], [0], [0]]
         b_c = [0] * bc_bufLen  # буффер для сериализации матричных элементов и входов
         initiate_layers(self.nn_params, nn_map, len(nn_map))
-        learn(b_c,self.nn_params, 0.07, 7, X, Y_and)
+        learn(b_c,self.nn_params, 0.07, 7, X, Y_or)
         compil_serializ(b_c, self.nn_params.list_, len(nn_map) - 1, "weight2" )
         print("in test_7 after learn matr")
         for i in self.nn_params.list_:
