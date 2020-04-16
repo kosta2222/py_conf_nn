@@ -17,16 +17,17 @@ def cross_validation(nn_params:NnParams, X_test: list, Y_test: list):
     out_nn=None
     res_acc = 1
     rows = len(X_test)
+    wi_y_test = len(Y_test[0])
     n = 0
     answer = 0
     for i in range(rows):
         x_test = X_test[i]
         y_test = Y_test[i]
-        print("in cross val x_test",x_test)
+        # print("in cross val x_test",x_test)
         out_nn=answer_nn_direct(nn_params, x_test, 1)
-        print("in cross val out_nn",out_nn)
+        # print("in cross val out_nn",out_nn)
         # res=check_oneHotVecs(scores, out_nn, y_test, len(y_test))
-        for i in range(len(out_nn)):
+        for i in range(wi_y_test):
             n = out_nn[i]
             answer = y_test[i]
             if (n > 0.5):

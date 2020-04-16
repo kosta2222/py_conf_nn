@@ -136,33 +136,33 @@ def make_hidden(objLay:nnLay, inputs:list, debug):
         objLay.hidden[row] = val
         tmp_v = 0
         val = 0
-    print("in make_hidden e",objLay.cost_signals)
-    print("in make_hidden h",objLay.hidden)
+    # print("in make_hidden e",objLay.cost_signals)
+    # print("in make_hidden h",objLay.hidden)
     # print("in make_hidden matrix state",objLay.matrix)
 
 
 def make_hidden_on_contrary(objLay:nnLay, inputs:list, debug):
-    print("in make_hidden_on_contrary ")
-    print("inputs",inputs)
+    # print("in make_hidden_on_contrary ")
+    # print("inputs",inputs)
     tmp_v = 0
     val = 0
-    print("in_",objLay.in_,"\nout",objLay.out)
-    print("matrix",objLay.matrix)
+    # print("in_",objLay.in_,"\nout",objLay.out)
+    # print("matrix",objLay.matrix)
     for elem in range(objLay.in_):
-        print("elem",elem)
+        # print("elem",elem)
         for row in range(objLay.out):
             # if elem==1:
             #     tmp_v+=objLay.matrix[row][1]
             # else:
             tmp_v+=objLay.matrix[row][elem] * inputs[row]
-            print("tmp_v",tmp_v)
+            # print("tmp_v",tmp_v)
         objLay.cost_signals[elem] = tmp_v
         val = operations(SIGMOID,tmp_v, 1, 0, 0, "")
         objLay.hidden[elem] = val
         tmp_v = 0
         val = 0
-    print("in make_hidden e",objLay.cost_signals)
-    print("in make_hidden h",objLay.hidden)
+    # print("in make_hidden e",objLay.cost_signals)
+    # print("in make_hidden h",objLay.hidden)
 """
 def backpropagate1():
     calc_out_error(nn_params.list_[nn_params.nlCount - 1], nn_params.targets)
@@ -194,7 +194,7 @@ def set_io(objLay:nnLay, inputs, outputs):
     for row in range(outputs):
         for elem in range(inputs):
             objLay.matrix[row][elem] =operations(INIT_W_MY, inputs, 0, 0, 0, "")
-    print("in set_io matrix", objLay.matrix)
+    # print("in set_io matrix", objLay.matrix)
 
 
 def initiate_layers(nn_params:NnParams,network_map:tuple,size):

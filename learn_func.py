@@ -18,9 +18,9 @@ def learn(b_c:list, nn_params, l_r, epochcs, train_set:list, target_set:list):
     n_mse = []
     nn_params.lr = l_r
     exit_flag = False
-    acc_shurenss = 25
+    acc_shurenss = 100
     acc = 0
-    while (iteration < epochcs):
+    while True:#(iteration < epochcs):
         print("epocha:", iteration)
         for i in range(len(target_set)):
             X = train_set[i]
