@@ -1,7 +1,7 @@
 from cv import cross_validation
 from serial_deserial_func import compil_serializ
 from nn_app import train, initiate_layers, get_min_square_err, answer_nn_direct, answer_nn_direct_on_contrary,\
-get_mean, get_mean_spec
+get_mean
 from NN_params import NnParams   # импортруем параметры сети
 from serial_deserial_func import deserializ
 from nn_constants import bc_bufLen
@@ -18,7 +18,7 @@ def learn(b_c:list, nn_params, l_r, epochcs, train_set:list, target_set:list):
     n_mse = []
     A = 0.01
     exit_flag = False
-    acc_shurenss = 100
+    acc_shurenss = 75
     acc = 0
     alpha=0.99
     beta=1.01
@@ -42,13 +42,14 @@ def learn(b_c:list, nn_params, l_r, epochcs, train_set:list, target_set:list):
             print("in learn Y",Y)
             train(nn_params, X, Y, 1)
             out_nn = nn_params.list_[nn_params.nlCount - 1].hidden
+            print("in learn",out_nn)
             mse = get_min_square_err(out_nn, Y, nn_params.outputNeurons)
             print("in learn mse",mse)
             if mse == 0:
             # break
                pass
             if with_adap_lr:
-                Z = get_mean(out_nn, Y, len(out_nn))
+                Z = get_mean(out_nn, Y, len(Y))
                 delta_E_spec = Z - gama * Z_t_minus_1
                 if delta_E_spec > 0:
                     A = alpha * A_t_minus_1
@@ -91,5 +92,6 @@ class TestLay(u.TestCase):
        for i in nn_params1.list_:
           print(i.matrix)
        print(answer_nn_direct(nn_params1, [1, 1], 1))
-       # answer_nn_direct_on_contrary(nn_params1, [0], 1)
+       print("*ON CONTRARY*")
+       answer_nn_direct_on_contrary(nn_params1, [0], 1)
     # def test_9(self):

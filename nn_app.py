@@ -43,7 +43,8 @@ def get_min_square_err(out_nn:list,teacher_answ:list,n):
 def get_mean(l1:list, l2:list, n):
     sum=0
     for row in range(n):
-        sum+=l1[row] - l2[row]
+        sum+=l1[row]\
+             - l2[row]
     return sum / n
 # def get_mean_spec(l1:list, l2:list,koef:float, n:int):
 #     sum=0
