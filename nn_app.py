@@ -40,6 +40,19 @@ def get_min_square_err(out_nn:list,teacher_answ:list,n):
         sum+=math.pow((out_nn[row] - teacher_answ[row]),2)
     return sum / n
 
+def get_mean(l1:list, l2:list, n):
+    sum=0
+    for row in range(n):
+        sum+=l1[row] - l2[row]
+    return sum / n
+# def get_mean_spec(l1:list, l2:list,koef:float, n:int):
+#     sum=0
+#     for row in range(n):
+#         sum+=l1[row] - koef * [row]
+#     return sum / n
+
+
+
 
 def get_cost_signals(objLay:nnLay):
     return objLay.cost_signals

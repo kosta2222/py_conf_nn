@@ -1,6 +1,7 @@
 from cv import cross_validation
 from serial_deserial_func import compil_serializ
-from nn_app import train, initiate_layers, get_min_square_err, answer_nn_direct, answer_nn_direct_on_contrary
+from nn_app import train, initiate_layers, get_min_square_err, answer_nn_direct, answer_nn_direct_on_contrary,\
+get_mean, get_mean_spec
 from NN_params import NnParams   # импортруем параметры сети
 from serial_deserial_func import deserializ
 from nn_constants import bc_bufLen
@@ -11,28 +12,51 @@ def create_nn_params():
 
 
 def learn(b_c:list, nn_params, l_r, epochcs, train_set:list, target_set:list):
-
     error = 0.0
     iteration: int = 0
     n_epochs = []
     n_mse = []
-    nn_params.lr = l_r
+    A = 0.01
     exit_flag = False
     acc_shurenss = 100
     acc = 0
+    alpha=0.99
+    beta=1.01
+    gama=1.01
+    delta_E_spec=0
+    Z=0
+    Z_t_minus_1=0
+    A_t_minus_1=0
+    with_adap_lr = True
+    out_nn:list=None
     while True:#(iteration < epochcs):
         print("epocha:", iteration)
         for i in range(len(target_set)):
+            if iteration == 0:
+                Z_t_minus_1 = Z
+                A_t_minus_1 = A
+            nn_params.lr = A
             X = train_set[i]
             Y = target_set[i]
             print("in learn X",X)
             print("in learn Y",Y)
             train(nn_params, X, Y, 1)
-            mse = get_min_square_err(nn_params.list_[nn_params.nlCount - 1].hidden, Y, nn_params.outputNeurons)
+            out_nn = nn_params.list_[nn_params.nlCount - 1].hidden
+            mse = get_min_square_err(out_nn, Y, nn_params.outputNeurons)
             print("in learn mse",mse)
             if mse == 0:
             # break
                pass
+            if with_adap_lr:
+                Z = get_mean(out_nn, Y, len(out_nn))
+                delta_E_spec = Z - gama * Z_t_minus_1
+                if delta_E_spec > 0:
+                    A = alpha * A_t_minus_1
+                else:
+                    A = beta * A_t_minus_1
+                print("A",A)
+            A_t_minus_1 = A
+            Z_t_minus_1 = Z
         acc = cross_validation(nn_params, train_set, target_set)
         if acc == acc_shurenss:
             exit_flag = True
