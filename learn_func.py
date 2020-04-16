@@ -16,6 +16,8 @@ def learn(b_c:list, nn_params, l_r, epochcs, train_set:list, target_set:list):
     n_epochs = []
     n_mse = []
     nn_params.lr = l_r
+    acc = 0
+    acc_shureness =75
     while (iteration < epochcs):
         print("epocha:", iteration)
         for i in range(len(target_set)):
@@ -27,6 +29,9 @@ def learn(b_c:list, nn_params, l_r, epochcs, train_set:list, target_set:list):
             mse = get_min_square_err(nn_params.list_[nn_params.nlCount - 1].hidden, Y, nn_params.outputNeurons)
             print("in learn mse",mse)
         if mse == 0:
+            break
+        acc = cross_validation(nn_params, train_set, target_set)
+        if acc == acc_shureness:
             break
         iteration+=1
     cross_validation(nn_params, train_set, target_set)
