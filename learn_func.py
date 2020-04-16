@@ -11,11 +11,15 @@ def create_nn_params():
 
 
 def learn(b_c:list, nn_params, l_r, epochcs, train_set:list, target_set:list):
+
     error = 0.0
     iteration: int = 0
     n_epochs = []
     n_mse = []
     nn_params.lr = l_r
+    exit_flag = False
+    acc_shurenss = 25
+    acc = 0
     while (iteration < epochcs):
         print("epocha:", iteration)
         for i in range(len(target_set)):
@@ -26,9 +30,17 @@ def learn(b_c:list, nn_params, l_r, epochcs, train_set:list, target_set:list):
             train(nn_params, X, Y, 1)
             mse = get_min_square_err(nn_params.list_[nn_params.nlCount - 1].hidden, Y, nn_params.outputNeurons)
             print("in learn mse",mse)
-        if mse == 0:
+            if mse == 0:
+            # break
+               pass
+        acc = cross_validation(nn_params, train_set, target_set)
+        if acc == acc_shurenss:
+            exit_flag = True
             break
+        # if exit_flag == True:
+        #     break
         iteration+=1
+    print("***CV***")
     cross_validation(nn_params, train_set, target_set)
     # compil_serializ(b_c, nn_params.list_,len(nn_map)-1,"wei_wei")
 
@@ -40,10 +52,10 @@ class TestLay(u.TestCase):
     def test_7(self):
         nn_map = (2, 3, 1)
         X = [[1, 1], [1, 0], [0, 1], [0, 0]]
-        Y = [[1], [1], [1], [0]]
+        Y_or = [[1], [1], [1], [0]]
         b_c = [0] * bc_bufLen  # буффер для сериализации матричных элементов и входов
         initiate_layers(self.nn_params, nn_map, len(nn_map))
-        learn(b_c,self.nn_params, 0.07, 7, X, Y)
+        learn(b_c,self.nn_params, 0.07, 7, X, Y_or)
         compil_serializ(b_c, self.nn_params.list_, len(nn_map) - 1, "weight2" )
         print("in test_7 after learn matr")
         for i in self.nn_params.list_:
@@ -55,5 +67,5 @@ class TestLay(u.TestCase):
        for i in nn_params1.list_:
           print(i.matrix)
        print(answer_nn_direct(nn_params1, [1, 1], 1))
-       answer_nn_direct_on_contrary(nn_params1, [0], 1)
+       # answer_nn_direct_on_contrary(nn_params1, [0], 1)
     # def test_9(self):
