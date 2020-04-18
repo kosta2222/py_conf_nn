@@ -50,11 +50,11 @@ def operations( op,  a,  b,  c,  d,  str):
     elif op == INIT_W_HE:
         return np.random.randn() * math.sqrt(2 / a)
     elif op == INIT_W_MY:
-        if ready:
-            ready = False
-            return -0.01
-        ready = True
-        return 0.01
+        # if ready:
+        #     ready = False
+        #     return -0.4967141530112327
+        # ready = True
+        return 0.567141530112327
     elif op ==INIT_W_GLOROT_V1:
         return 2 / (a + b)
     elif op == INIT_W_UNIFORM:
