@@ -41,7 +41,9 @@ def cross_validation(nn_params:NnParams, X_test: list, Y_test: list):
                 scores.append(1)
             else:
                 scores.append(0)
+
     res_acc = sum(scores) / rows * 100
+    scores = []
     print("Acсuracy:%f%s"%(res_acc,"%"))
     return res_acc
 # def check_oneHotVecs(scores:list, out_nn:list, y_test, len_)->int:
