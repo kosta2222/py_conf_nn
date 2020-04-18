@@ -4,7 +4,7 @@ import numpy as np
 import struct as st
 from nn_constants import max_in_nn, max_trainSet_rows, max_validSet_rows, max_rows_orOut, max_am_layer\
 , max_am_epoch, max_am_objMse, max_stack_matrEl, max_stack_otherOp, bc_bufLen
-from nn_constants import RELU, RELU_DERIV, INIT_W_HE, INIT_W_MY, SIGMOID, SIGMOID_DERIV
+from nn_constants import RELU, RELU_DERIV, INIT_W_HE, INIT_W_MY, SIGMOID, SIGMOID_DERIV, TAN, TAN_DERIV
 from NN_params import NnParams   # импортруем параметры сети
 from Nn_lay import nnLay   # импортируем слой
 from work_with_arr import copy_vector
@@ -21,13 +21,13 @@ def calc_out_error(nn_params:NnParams,objLay:nnLay, targets:list):
     :return:
     """
     for row in range(objLay.out):
-        nn_params.out_errors[row] = (objLay.hidden[row] - targets[row]) * operations(SIGMOID_DERIV,objLay.cost_signals[row],0.42,0,0,"")
+        nn_params.out_errors[row] = (objLay.hidden[row] - targets[row]) * operations(TAN_DERIV,objLay.cost_signals[row],0.42,0,0,"")
 
 
 def calc_hid_error(objLay:nnLay, essential_gradients:list, entered_vals:list):
     for elem in range(objLay.in_):
         for row in range(objLay.out):
-            objLay.errors[elem]+=essential_gradients[row] * objLay.matrix[row][elem]  * operations(SIGMOID_DERIV, entered_vals[elem], 0.42, 0, 0, "")
+            objLay.errors[elem]+=essential_gradients[row] * objLay.matrix[row][elem]  * operations(TAN_DERIV, entered_vals[elem], 0.42, 0, 0, "")
     # print("in calc_hid_error essential_gradients",essential_gradients)
     # print("in calc_hid_error entered_vals",entered_vals)
     # print("in calc_hid_error errors",objLay.errors)
@@ -43,8 +43,7 @@ def get_min_square_err(out_nn:list,teacher_answ:list,n):
 def get_mean(l1:list, l2:list, n):
     sum=0
     for row in range(n):
-        sum+=l1[row]\
-             - l2[row]
+        sum+=l1[row]- l2[row]
     return sum / n
 # def get_mean_spec(l1:list, l2:list,koef:float, n:int):
 #     sum=0
@@ -146,7 +145,7 @@ def make_hidden(objLay:nnLay, inputs:list, debug):
             # else:
             tmp_v+=objLay.matrix[row][elem] * inputs[elem]
         objLay.cost_signals[row] = tmp_v
-        val = operations(SIGMOID,tmp_v, 0.42, 0, 0, "")
+        val = operations(TAN,tmp_v, 0.42, 0, 0, "")
         objLay.hidden[row] = val
         tmp_v = 0
         val = 0

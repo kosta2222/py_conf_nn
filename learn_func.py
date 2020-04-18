@@ -16,9 +16,9 @@ def learn(b_c:list, nn_params, l_r, epochcs, train_set:list, target_set:list):
     iteration: int = 0
     n_epochs = []
     n_mse = []
-    A = 0.01
+    A = 0.07
     exit_flag = False
-    acc_shurenss = 75
+    acc_shurenss = 100
     acc = 0
     alpha=0.99
     beta=1.01
@@ -27,7 +27,7 @@ def learn(b_c:list, nn_params, l_r, epochcs, train_set:list, target_set:list):
     Z=0
     Z_t_minus_1=0
     A_t_minus_1=0
-    with_adap_lr = True
+    with_adap_lr = False
     out_nn:list=None
     while True:#(iteration < epochcs):
         print("epocha:", iteration)
@@ -62,6 +62,7 @@ def learn(b_c:list, nn_params, l_r, epochcs, train_set:list, target_set:list):
         if acc == acc_shurenss:
             exit_flag = True
             break
+            pass
         # if exit_flag == True:
         #     break
         iteration+=1
@@ -93,5 +94,5 @@ class TestLay(u.TestCase):
           print(i.matrix)
        print(answer_nn_direct(nn_params1, [1, 1], 1))
        print("*ON CONTRARY*")
-       answer_nn_direct_on_contrary(nn_params1, [0], 1)
+       answer_nn_direct_on_contrary(nn_params1, [1], 1)
     # def test_9(self):
