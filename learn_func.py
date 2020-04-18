@@ -82,7 +82,7 @@ class TestLay(u.TestCase):
         Y_and = [[1], [0], [0], [0]]
         b_c = [0] * bc_bufLen  # буффер для сериализации матричных элементов и входов
         initiate_layers(self.nn_params, nn_map, len(nn_map))
-        learn(b_c,self.nn_params, 0.07, 7, X, Y_or)
+        learn(b_c,self.nn_params, 0.07, 7, X, Y_and)
         compil_serializ(b_c, self.nn_params.list_, len(nn_map) - 1, "weight2" )
         print("in test_7 after learn matr")
         for i in self.nn_params.list_:
