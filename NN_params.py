@@ -21,3 +21,5 @@ class    NnParams:
         self.out_errors = [0] * (max_rows_orOut)  # вектор ошибок слоя
         self.lr=0;  # коэффициент
           #обучения
+        self.with_adap_lr = False
+        self.with_bias = False

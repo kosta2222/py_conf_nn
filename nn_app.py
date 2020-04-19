@@ -81,9 +81,9 @@ def upd_matrix(nn_params:NnParams, objLay:nnLay, entered_vals):
 
 
 def feed_forwarding(nn_params:NnParams,ok:bool, debug:int):
-    make_hidden(nn_params.list_[0],nn_params.inputs,debug)
+    make_hidden(nn_params, nn_params.list_[0], nn_params.inputs, debug)
     for i in range(1,nn_params.nlCount):
-        make_hidden(nn_params.list_[i], get_hidden(nn_params.list_[i - 1]), debug)
+        make_hidden(nn_params, nn_params.list_[i], get_hidden(nn_params.list_[i - 1]), debug)
     if ok:
         for i in range(nn_params.outputNeurons):
             print("%d item val %f"%(i + 1,nn_params.list_[nn_params.nlCount - 1].hidden[i]))
@@ -134,16 +134,20 @@ def answer_nn_direct_on_contrary(nn_params:NnParams,in_:list, debug):
 
 # Получить вектор входов, сделать матричный продукт и матричный продукт пропустить через функцию активации,
 # записать этот вектор в параметр слоя сети(hidden)
-def make_hidden(objLay:nnLay, inputs:list, debug):
+def make_hidden(nn_params, objLay:nnLay, inputs:list, debug):
     # print("in make_hidden inputs",inputs)
     tmp_v = 0
     val = 0
     for row in range(objLay.out):
         for elem in range(objLay.in_):
-            # if elem==1:
-            #     tmp_v+=objLay.matrix[row][1]
-            # else:
-            tmp_v+=objLay.matrix[row][elem] * inputs[elem]
+            if nn_params.with_bias:
+               if elem==1:
+                  tmp_v+=objLay.matrix[row][elem]
+               else:
+                  tmp_v+=objLay.matrix[row][elem] * inputs[elem]
+            else:
+                tmp_v+=objLay.matrix[row][elem] * inputs[elem]
+
         objLay.cost_signals[row] = tmp_v
         val = operations(TAN,tmp_v, 0.42, 0, 0, "")
         objLay.hidden[row] = val
@@ -225,6 +229,9 @@ def initiate_layers(nn_params:NnParams,network_map:tuple,size):
     nn_params.outputNeurons = network_map[nn_params.nlCount]
     set_io(nn_params.list_[0],network_map[0],network_map[1])
     for i in range(1, nn_params.nlCount ):# след. матр. д.б. (3,1) т.е. in(elems)=3 out(rows)=1
-        in_ = network_map[i]
+        if nn_params.with_bias:
+           in_ = network_map[i] + 1
+        else:
+            in_ = network_map[i]
         out = network_map[i + 1]
         set_io(nn_params.list_[i], in_, out)
