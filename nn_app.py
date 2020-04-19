@@ -145,7 +145,7 @@ def make_hidden(objLay:nnLay, inputs:list, debug):
             # else:
             tmp_v+=objLay.matrix[row][elem] * inputs[elem]
         objLay.cost_signals[row] = tmp_v
-        val = operations(TAN,tmp_v, 0.42, 0, 0, "")
+        val = operations(TAN, tmp_v, 0.42, 0, 0, "")
         objLay.hidden[row] = val
         tmp_v = 0
         val = 0
@@ -170,7 +170,7 @@ def make_hidden_on_contrary(objLay:nnLay, inputs:list, debug):
             tmp_v+=objLay.matrix[row][elem] * inputs[row]
             # print("tmp_v",tmp_v)
         objLay.cost_signals[elem] = tmp_v
-        val = operations(TAN,tmp_v, 1, 0, 0, "")
+        val = operations(TAN,tmp_v, 0.42, 0, 0, "")
         objLay.hidden[elem] = val
         tmp_v = 0
         val = 0

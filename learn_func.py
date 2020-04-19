@@ -5,6 +5,7 @@ get_mean
 from NN_params import NnParams   # импортруем параметры сети
 from serial_deserial_func import deserializ
 from nn_constants import bc_bufLen
+import numpy as np
 #----------------------Основные параметры сети----------------------------------
 # создать параметры сети
 def create_nn_params():
@@ -18,7 +19,7 @@ def learn(b_c:list, nn_params, l_r, epochcs, train_set:list, target_set:list):
     n_mse = []
     A = 0.01
     exit_flag = False
-    acc_shurenss = 75
+    acc_shurenss = 100
     acc = 0
     alpha=0.99
     beta=1.01
@@ -76,20 +77,34 @@ class TestLay(u.TestCase):
     def setUp(self) -> None:
          self.nn_params = create_nn_params()
     def test_7(self):
-        nn_map = (4, 3, 4)
-        # X = [[1, 1], [1, 0], [0, 1], [0, 0]]
+        nn_map = (2, 3, 1)
+        X = [[1, 1], [1, 0], [0, 1], [0, 0]]
         Y_or = [[1], [1], [1], [0]]
         Y_and = [[1], [0], [0], [0]]
-        X = [[0, 0, 0, 0], [0, 0, 0, 1], [0, 0, 1, 0], [0, 0, 1, 1], [0, 1, 0, 0], [0, 1, 0, 1], [0, 1, 1, 0],
-             [0, 1, 1, 1], [1, 0, 0, 0], [1, 0, 0, 1], [1, 0, 1, 0], [1, 0, 1, 1], [1, 1, 0, 0], [1, 1, 0, 1],
-             [1, 1, 1, 0], [1, 1, 1, 1]]
-        Y = [[0, 0, 0, 0], [0, 0, 0, 1], [0, 0, 1, 0], [0, 0, 1, 1], [0, 1, 0, 0], [0, 1, 0, 1], [0, 1, 1, 0],
-             [0, 1, 1, 1], [1, 0, 0, 0], [1, 0, 0, 1], [1, 0, 1, 0], [1, 0, 1, 1], [1, 1, 0, 0], [1, 1, 0, 1],
-             [1, 1, 1, 0], [1, 1, 1, 1]]
+        # X = [[0, 0, 0, 0], [0, 0, 0, 1], [0, 0, 1, 0], [0, 0, 1, 1], [0, 1, 0, 0], [0, 1, 0, 1], [0, 1, 1, 0],
+        #      [0, 1, 1, 1], [1, 0, 0, 0], [1, 0, 0, 1], [1, 0, 1, 0], [1, 0, 1, 1], [1, 1, 0, 0], [1, 1, 0, 1],
+        #      [1, 1, 1, 0], [1, 1, 1, 1]]
+        # Y = [[0, 0, 0, 0], [0, 0, 0, 1], [0, 0, 1, 0], [0, 0, 1, 1], [0, 1, 0, 0], [0, 1, 0, 1], [0, 1, 1, 0],
+        #      [0, 1, 1, 1], [1, 0, 0, 0], [1, 0, 0, 1], [1, 0, 1, 0], [1, 0, 1, 1], [1, 1, 0, 0], [1, 1, 0, 1],
+        #      [1, 1, 1, 0], [1, 1, 1, 1]]
+        # X=np.array(X,dtype='d')
+        # Y_and=np.array(Y_and,dtype='d')
+        # X/= np.std(X, axis=0)
+        # X/=4
+        # Y_and/=4
+        # cov_X=np.dot(X.T, X)/X.shape[0]
+        # cov_Y=np.dot(Y_and.T, Y_and)/Y_and.shape[0]
+        # cov_Y=[[1.33333333],[1]]
+        print("cov_X",X)
+        print("cov_Y",Y_and)
+        # X=X.tolist()
+        # Y_and=Y_and.tolist()
+
+
 
         b_c = [0] * bc_bufLen  # буффер для сериализации матричных элементов и входов
         initiate_layers(self.nn_params, nn_map, len(nn_map))
-        learn(b_c,self.nn_params, 0.07, 7, X, Y)
+        learn(b_c,self.nn_params, 0.07, 7, X, Y_and)
         compil_serializ(b_c, self.nn_params.list_, len(nn_map) - 1, "weight2" )
         print("in test_7 after learn matr")
         for i in self.nn_params.list_:
@@ -100,9 +115,9 @@ class TestLay(u.TestCase):
        deserializ(nn_params1, nn_params1.list_, "weight2")
        for i in nn_params1.list_:
           print(i.matrix)
-       print(answer_nn_direct(nn_params1, [0, 0, 0, 1], 1))
+       print(answer_nn_direct(nn_params1, [1, 1], 1))
        print("*ON CONTRARY*")
-       answer_nn_direct_on_contrary(nn_params1, [0, 0, 0, 1], 1)
+       answer_nn_direct_on_contrary(nn_params1, [1], 1)
     # def test_9(self):
 if __name__ == '__main__':
     t = TestLay()
