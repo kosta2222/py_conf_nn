@@ -25,41 +25,48 @@ def cross_validation(nn_params:NnParams, X_test: list, Y_test: list):
         y_test = Y_test[i]
         # print("in cross val x_test",x_test)
         out_nn=answer_nn_direct(nn_params, x_test, 1)
+        is_2vecs_eq = 0
         # print("in cross val out_nn",out_nn)
+        is_2vecs_eq = check_2vecs_to_eq(out_nn, y_test, nn_params.outputNeurons)
+        scores.append(is_2vecs_eq)
         # res=check_oneHotVecs(scores, out_nn, y_test, len(y_test))
-        for i in range(wi_y_test):
-            n = out_nn[i]
-            answer = y_test[i]
-            if (n > 0.5):
-                n = 1
-                print("output vector[ %f ] " % 1, end=' ')
-            else:
-                n = 0
-                print("output vector[ %f ] " % 0, end=' ');
-            print("expected [ %f ]\n" % answer);
-            if n == answer:
-                scores.append(1)
-            else:
-                scores.append(0)
+        # for i in range(wi_y_test):
+        #     n = out_nn[i]
+        #     answer = y_test[i]
+        #     if (n > 0.5):
+        #         n = 1
+        #         print("output vector[ %f ] " % 1, end=' ')
+        #     else:
+        #         n = 0
+        #         print("output vector[ %f ] " % 0, end=' ');
+        #     print("expected [ %f ]\n" % answer);
+        #     if n == answer:
+        #         scores.append(1)
+        #     else:
+        #         scores.append(0)
+
 
     res_acc = sum(scores) / rows * 100
 
     print("Acсuracy:%f%s"%(res_acc,"%"))
     return res_acc
-# def check_oneHotVecs(scores:list, out_nn:list, y_test, len_)->int:
-#     tmp_elemOf_outNN_asHot = 0
-#     global k
-#     for col in range(len_):
-#         tmp_elemOf_outNN_asHot=out_nn[col]
-#         if (tmp_elemOf_outNN_asHot > 0 ) and (tmp_elemOf_outNN_asHot > 0.5 or tmp_elemOf_outNN_asHot == 1):
-#             tmp_elemOf_outNN_asHot = 1
-#         else:
-#             tmp_elemOf_outNN_asHot = 0
-#         if (tmp_elemOf_outNN_asHot == int(y_test[col])):
-#             scores[k] = 1
-#             k += 1
-#         else:
-#             break
+def check_2vecs_to_eq(out_nn:list, y_test, len_)->int:
+    res_check_is_2vecs_eq= 1
+
+    for col in range(len_):
+       elem_out_nn = out_nn[col]
+       elem_y_test =y_test[col]
+       if elem_out_nn > 0 and elem_out_nn > 0.5:
+              elem_out_nn = 1
+       else:
+           elem_out_nn = 0
+       if elem_out_nn != elem_y_test:
+           res_check_is_2vecs_eq = 0
+           break
+       else:
+           pass
+    return res_check_is_2vecs_eq
+
 # def calc_accur(scores:list, rows)->float:
 #     accuracy=0
 #     sum=0

@@ -18,7 +18,7 @@ def learn(b_c:list, nn_params, l_r, epochcs, train_set:list, target_set:list):
     n_mse = []
     A = 0.01
     exit_flag = False
-    acc_shurenss = 400
+    acc_shurenss = 75
     acc = 0
     alpha=0.99
     beta=1.01
@@ -78,8 +78,8 @@ class TestLay(u.TestCase):
     def test_7(self):
         nn_map = (4, 3, 4)
         # X = [[1, 1], [1, 0], [0, 1], [0, 0]]
-        # Y_or = [[1], [1], [1], [0]]
-        # Y_and = [[1], [0], [0], [0]]
+        Y_or = [[1], [1], [1], [0]]
+        Y_and = [[1], [0], [0], [0]]
         X = [[0, 0, 0, 0], [0, 0, 0, 1], [0, 0, 1, 0], [0, 0, 1, 1], [0, 1, 0, 0], [0, 1, 0, 1], [0, 1, 1, 0],
              [0, 1, 1, 1], [1, 0, 0, 0], [1, 0, 0, 1], [1, 0, 1, 0], [1, 0, 1, 1], [1, 1, 0, 0], [1, 1, 0, 1],
              [1, 1, 1, 0], [1, 1, 1, 1]]
