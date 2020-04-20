@@ -9,7 +9,7 @@ from util_func import _0_
 
 
 
-p=0
+p=0  # указатель на элементы байт-кода 
 
 def py_pack (b_c:list, op_i, val_i_or_fl):
     """
@@ -19,7 +19,7 @@ def py_pack (b_c:list, op_i, val_i_or_fl):
     :return: следующий индекс куда можно записать команду stop
     """
     global p
-    ops_name = ['push_i', 'push_fl', 'make_kernel', 'with_bias', 'stop']
+    ops_name = ['push_i', 'push_fl', 'make_kernel', 'with_bias', 'stop']  # отпечатка команд [для отладки]
     print("in py_pack op",ops_name[op_i],"val_i_or_fl",val_i_or_fl)
     if op_i == push_fl:
         b_c[p] = st.pack('B', push_fl)

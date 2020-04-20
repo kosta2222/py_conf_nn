@@ -16,7 +16,7 @@ def learn(b_c:list, nn_params, epochcs, train_set:list, target_set:list):
     iteration: int = 0
     n_epochs = []
     n_mse = []
-    A = nn_params.lr
+    A = nn_params.lr  # A - здесь коэффициент обучения
     acc_shurenss = 100
     acc = 0
     alpha=0.99
@@ -29,28 +29,30 @@ def learn(b_c:list, nn_params, epochcs, train_set:list, target_set:list):
     with_adap_lr = True
     with_bias = False
     out_nn:list=None
+    x:list = None  # 1d вектор из матрицы обучения
+    y:list = None  # 1d вектор из матрицы ответов от учителя
     hei_target_set = len(target_set)
-    while True:#(iteration < epochcs):
+    while True:
         print("epocha:", iteration)
         for i in range(hei_target_set):
             if iteration == 0:
                 E_spec_t_minus_1 = E_spec
                 A_t_minus_1 = A
             nn_params.lr = A
-            X = train_set[i]
-            Y = target_set[i]
-            print("in learn X",X)
-            print("in learn Y",Y)
-            train(nn_params, X, Y, 1)
+            x = train_set[i]
+            y = target_set[i]
+            print("in learn x",x)
+            print("in learn y",y)
+            train(nn_params, x, y, 1)
             out_nn = nn_params.list_[nn_params.nlCount - 1].hidden
             print("in learn",out_nn)
-            mse = get_min_square_err(out_nn, Y, nn_params.outputNeurons)
+            mse = get_min_square_err(out_nn, y, nn_params.outputNeurons)
             print("in learn mse",mse)
             if mse == 0:
                # break
                pass
             if nn_params.with_adap_lr:
-                E_spec = get_mean(out_nn, Y, len(Y))
+                E_spec = get_mean(out_nn, y, len(y))
                 delta_E_spec = E_spec - gama * E_spec_t_minus_1
                 if delta_E_spec > 0:
                     A = alpha * A_t_minus_1
