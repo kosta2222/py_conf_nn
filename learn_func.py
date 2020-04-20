@@ -23,8 +23,8 @@ def learn(b_c:list, nn_params, epochcs, train_set:list, target_set:list):
     beta=1.01
     gama=1.01
     delta_E_spec=0
-    Z=0
-    Z_t_minus_1=0
+    E_spec=0
+    E_spec_t_minus_1=0
     A_t_minus_1=0
     with_adap_lr = True
     with_bias = False
@@ -34,7 +34,7 @@ def learn(b_c:list, nn_params, epochcs, train_set:list, target_set:list):
         print("epocha:", iteration)
         for i in range(hei_target_set):
             if iteration == 0:
-                Z_t_minus_1 = Z
+                E_spec_t_minus_1 = E_spec
                 A_t_minus_1 = A
             nn_params.lr = A
             X = train_set[i]
@@ -50,15 +50,15 @@ def learn(b_c:list, nn_params, epochcs, train_set:list, target_set:list):
                # break
                pass
             if nn_params.with_adap_lr:
-                Z = get_mean(out_nn, Y, len(Y))
-                delta_E_spec = Z - gama * Z_t_minus_1
+                E_spec = get_mean(out_nn, Y, len(Y))
+                delta_E_spec = E_spec - gama * E_spec_t_minus_1
                 if delta_E_spec > 0:
                     A = alpha * A_t_minus_1
                 else:
                     A = beta * A_t_minus_1
                 print("A",A)
                 A_t_minus_1 = A
-                Z_t_minus_1 = Z
+                E_spec_t_minus_1 = E_spec
         acc = cross_validation(nn_params, train_set, target_set)
         if acc == acc_shurenss:
             break
@@ -103,7 +103,7 @@ class TestLay(u.TestCase):
           print(i.matrix)
        print(answer_nn_direct(nn_params1, [0, 1], 1))
        print("*ON CONTRARY*")
-       answer_nn_direct_on_contrary(nn_params1, [1], 1)
+       answer_nn_direct_on_contrary(nn_params1, [0], 1)
     # def test_9(self):
 if __name__ == '__main__':
     t = TestLay()

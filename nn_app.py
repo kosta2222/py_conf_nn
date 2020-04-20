@@ -21,13 +21,13 @@ def calc_out_error(nn_params:NnParams,objLay:nnLay, targets:list):
     :return:
     """
     for row in range(objLay.out):
-        nn_params.out_errors[row] = (objLay.hidden[row] - targets[row]) * operations(TAN_DERIV,objLay.cost_signals[row],0.42,0,0,"")
+        nn_params.out_errors[row] = (objLay.hidden[row] - targets[row]) * operations(nn_params.act_fu, objLay.cost_signals[row], 0.42, 0, 0, "", nn_params)
 
 
-def calc_hid_error(objLay:nnLay, essential_gradients:list, entered_vals:list):
+def calc_hid_error(nn_params:NnParams, objLay:nnLay, essential_gradients:list, entered_vals:list):
     for elem in range(objLay.in_):
         for row in range(objLay.out):
-            objLay.errors[elem]+=essential_gradients[row] * objLay.matrix[row][elem]  * operations(TAN_DERIV, entered_vals[elem], 0.42, 0, 0, "")
+            objLay.errors[elem]+=essential_gradients[row] * objLay.matrix[row][elem]  * operations(nn_params.act_fu, entered_vals[elem], 0, 0, 0, "", nn_params)
     # print("in calc_hid_error essential_gradients",essential_gradients)
     # print("in calc_hid_error entered_vals",entered_vals)
     # print("in calc_hid_error errors",objLay.errors)
@@ -45,13 +45,6 @@ def get_mean(l1:list, l2:list, n):
     for row in range(n):
         sum+=l1[row]- l2[row]
     return sum / n
-# def get_mean_spec(l1:list, l2:list,koef:float, n:int):
-#     sum=0
-#     for row in range(n):
-#         sum+=l1[row] - koef * [row]
-#     return sum / n
-
-
 
 
 def get_cost_signals(objLay:nnLay):
@@ -149,7 +142,7 @@ def make_hidden(nn_params, objLay:nnLay, inputs:list, debug):
                 tmp_v+=objLay.matrix[row][elem] * inputs[elem]
 
         objLay.cost_signals[row] = tmp_v
-        val = operations(TAN,tmp_v, 0.42, 0, 0, "")
+        val = operations(nn_params.act_fu,tmp_v, 0, 0, 0, "", nn_params)
         objLay.hidden[row] = val
         tmp_v = 0
         val = 0
@@ -158,7 +151,7 @@ def make_hidden(nn_params, objLay:nnLay, inputs:list, debug):
     # print("in make_hidden matrix state",objLay.matrix)
 
 
-def make_hidden_on_contrary(objLay:nnLay, inputs:list, debug):
+def make_hidden_on_contrary(nn_params:NnParams, objLay:nnLay, inputs:list, debug):
     # print("in make_hidden_on_contrary ")
     # print("inputs",inputs)
     tmp_v = 0
@@ -168,35 +161,31 @@ def make_hidden_on_contrary(objLay:nnLay, inputs:list, debug):
     for elem in range(objLay.in_):
         # print("elem",elem)
         for row in range(objLay.out):
-            # if elem==1:
-            #     tmp_v+=objLay.matrix[row][1]
-            # else:
-            tmp_v+=objLay.matrix[row][elem] * inputs[row]
+            if nn_params.with_bias:
+               if elem == 1: 
+                  tmp_v+=objLay.matrix[row][elem] * inputs[row]
+               else:
+                  tmp_v+=objLay.matrix[row][elem] * inputs[elem]
+            else:
+                tmp_v+=objLay.matrix[row][elem] * inputs[row]
             # print("tmp_v",tmp_v)
         objLay.cost_signals[elem] = tmp_v
-        val = operations(TAN,tmp_v, 1, 0, 0, "")
+        val = operations(nn_params.act_fu, tmp_v, 0, 0, 0, "", nn_params)
         objLay.hidden[elem] = val
         tmp_v = 0
         val = 0
     # print("in make_hidden e",objLay.cost_signals)
     # print("in make_hidden h",objLay.hidden)
-"""
-def backpropagate1():
-    calc_out_error(nn_params.list_[nn_params.nlCount - 1], nn_params.targets)
-    calc_hid_error(nn_params.list_[1], nn_params.out_errors, get_cost_signals(nn_params.list_[0]))
-    calc_hid_zero_lay(nn_params.list_[0], get_essential_gradients(nn_params.list_[1]))
-    upd_matrix(nn_params.list_[1],  get_cost_signals(nn_params.list_[1 - 1]))
-    upd_matrix(nn_params.list_[0], nn_params.inputs)
-"""
+
 
 
 def backpropagate(nn_params:NnParams):
     calc_out_error(nn_params, nn_params.list_[nn_params.nlCount - 1],nn_params.targets)
     for i in range(nn_params.nlCount - 1, 0, -1):
         if i == nn_params.nlCount - 1:
-           calc_hid_error(nn_params.list_[i], nn_params.out_errors, get_cost_signals(nn_params.list_[i - 1]))
+           calc_hid_error(nn_params, nn_params.list_[i], nn_params.out_errors, get_cost_signals(nn_params.list_[i - 1]))
         else:
-            calc_hid_error(nn_params.list_[i], get_essential_gradients(nn_params.list_[i + 1]), get_cost_signals(nn_params.list_[i - 1]))
+            calc_hid_error(nn_params, nn_params.list_[i], get_essential_gradients(nn_params.list_[i + 1]), get_cost_signals(nn_params.list_[i - 1]))
     calc_hid_zero_lay(nn_params.list_[0], get_essential_gradients(nn_params.list_[1]))
     for i in range(nn_params.nlCount - 1, 0, -1):
         upd_matrix(nn_params, nn_params.list_[i],  get_cost_signals(nn_params.list_[i - 1]))
@@ -210,7 +199,7 @@ def set_io(objLay:nnLay, inputs, outputs):
     objLay.out=outputs
     for row in range(outputs):
         for elem in range(inputs):
-            objLay.matrix[row][elem] =operations(INIT_W_MY, inputs, 0, 0, 0, "")
+            objLay.matrix[row][elem] =operations(INIT_W_MY, inputs, 0, 0, 0, "", nn_params)
     # print("in set_io matrix", objLay.matrix)
 
 

@@ -1,13 +1,14 @@
 from nn_constants import RELU_DERIV, RELU, TRESHOLD_FUNC, TRESHOLD_FUNC_DERIV, LEAKY_RELU, LEAKY_RELU_DERIV,\
 SIGMOID, SIGMOID_DERIV, DEBUG, DEBUG_STR, INIT_W_HE, INIT_W_GLOROT_V1, INIT_W_HABR, INIT_W_MY, INIT_W_UNIFORM,\
     TAN, TAN_DERIV
+from NN_params import NnParams
 import numpy as np
 import math
 np.random.seed(42)
 ready = False
 f=0
 # операции для функций активаций и их производных
-def operations( op,  a,  b,  c,  d,  str):
+def operations( op , a, b, c, d, str, nn_params:NnParams):
     global ready, f
     alpha = 1.7159
     beta = 2 / 3
@@ -66,4 +67,4 @@ def operations( op,  a,  b,  c,  d,  str):
     elif op == TAN_DERIV:
         return beta / alpha * (alpha * alpha - f * f)
     elif op == DEBUG_STR:
-        print("%s\n"%str)
+        print("%s\n"%str_)
