@@ -19,7 +19,7 @@ def py_pack (b_c:list, op_i, val_i_or_fl):
     :return: следующий индекс куда можно записать команду stop
     """
     global p
-    ops_name = ['push_i', 'push_fl', 'make_kernel', 'stop']
+    ops_name = ['push_i', 'push_fl', 'make_kernel', 'with_bias', 'stop']
     print("in py_pack op",ops_name[op_i],"val_i_or_fl",val_i_or_fl)
     if op_i == push_fl:
         b_c[p] = st.pack('B', push_fl)
@@ -79,6 +79,7 @@ def vm_to_deserialize(nn_params:NnParams, list_:list, bin_buf:list):
     :param bin_buf: список байт - комманд из файла
     :return:
     """
+    print("in vm_to_deserialize")
     ops_name =['push_i', 'push_fl', 'make_kernel','with_bias', 'stop']
     matrix_el_st = [0] * max_stack_matrEl # стек для временного размещения элементов матриц из файла потом этот стек
     # сворачиваем в матрицу слоя после команды make_kernel
@@ -93,6 +94,7 @@ def vm_to_deserialize(nn_params:NnParams, list_:list, bin_buf:list):
     while (op != stop):
         # загружаем на стек количество входов и выходов ядра
         # чтение операции с параметром
+        print(ops_name[op])
         if  op == push_i:
             sp_op+=1
             ip+=1
@@ -152,11 +154,19 @@ def deserializ(nn_params:NnParams, list_:list, f_name:str):
     _0_("vm_deserializ")
 
 
-def compil_serializ(b_c:list, list_:nnLay, len_lst, f_name):
+def compil_serializ(nn_params:NnParams, b_c:list, list_:nnLay, len_lst, f_name):
     in_=0
     out=0
     p=0
+    with_bias_i = 0
+    stub = 0
     matrix=[0]*(max_in_nn * max_rows_orOut)
+    if nn_params.with_bias:
+        with_bias_i = 0
+    else:
+        with_bias_i = 1
+    py_pack(b_c, push_i, with_bias_i)
+    py_pack(b_c, with_bias, stub)
     for i in range(len_lst):
         in_=list_[i].in_
         out=list_[i].out
@@ -165,6 +175,6 @@ def compil_serializ(b_c:list, list_:nnLay, len_lst, f_name):
         copy_matrixAsStaticSquare_toRibon(list_[i].matrix, matrix, in_, out)
         for j in range(in_ * out):
             py_pack(b_c, push_fl, matrix[j])
-        py_pack(b_c, make_kernel, 0)
+        py_pack(b_c, make_kernel, stub)
     dump_bc(b_c, f_name)
 #----------------------------------------------------------------------
