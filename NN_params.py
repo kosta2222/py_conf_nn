@@ -26,6 +26,6 @@ class    NnParams:
         self.with_bias = False
         self.act_fu = NOP
         self.alpha_leaky_relu = 0
-        self.alpha_sigmoid = 0
+        self.alpha_sigmoid = 0.42
         self.alpha_tan = 1.7159
         self.beta_tan = 2 / 3

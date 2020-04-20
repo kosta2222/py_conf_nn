@@ -128,7 +128,7 @@ def answer_nn_direct_on_contrary(nn_params:NnParams,in_:list, debug):
 # Получить вектор входов, сделать матричный продукт и матричный продукт пропустить через функцию активации,
 # записать этот вектор в параметр слоя сети(hidden)
 def make_hidden(nn_params, objLay:nnLay, inputs:list, debug):
-    # print("in make_hidden inputs",inputs)
+    print("in make_hidden inputs",inputs)
     tmp_v = 0
     val = 0
     for row in range(objLay.out):
@@ -137,7 +137,8 @@ def make_hidden(nn_params, objLay:nnLay, inputs:list, debug):
                if elem==1:
                   tmp_v+=objLay.matrix[row][elem]
                else:
-                  tmp_v+=objLay.matrix[row][elem] * inputs[elem]
+                  tmp_v+=objLay.matrix[row][elem] *\
+                         inputs[elem]
             else:
                 tmp_v+=objLay.matrix[row][elem] * inputs[elem]
 

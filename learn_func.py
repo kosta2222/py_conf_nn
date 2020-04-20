@@ -11,13 +11,12 @@ def create_nn_params():
     return NnParams()
 
 
-def learn(b_c:list, nn_params, epochcs, train_set:list, target_set:list):
+def learn(b_c:list, nn_params, epochcs, train_set:list, target_set:list, accuracy_shureness:int):
     error = 0.0
     iteration: int = 0
     n_epochs = []
     n_mse = []
     A = nn_params.lr  # A - здесь коэффициент обучения
-    acc_shurenss = 100
     acc = 0
     alpha=0.99
     beta=1.01
@@ -62,7 +61,7 @@ def learn(b_c:list, nn_params, epochcs, train_set:list, target_set:list):
                 A_t_minus_1 = A
                 E_spec_t_minus_1 = E_spec
         acc = cross_validation(nn_params, train_set, target_set)
-        if acc == acc_shurenss:
+        if acc == accuracy_shureness:
             break
         iteration+=1
     print("***CV***")
@@ -76,7 +75,8 @@ class TestLay(u.TestCase):
          self.nn_params = create_nn_params()
          self.nn_params.with_bias = False
          self.nn_params.with_adap_lr = True
-         self.nn_params.lr = 0.07
+         self.nn_params.lr = 0.01
+         self.nn_params.act_fu = SIGMOID
     def test_7(self):
         nn_map = (2, 3, 1)
         X = [[1, 1], [1, 0], [0, 1], [0, 0]]
@@ -91,7 +91,7 @@ class TestLay(u.TestCase):
 
         b_c = [0] * bc_bufLen  # буффер для сериализации матричных элементов и входов
         initiate_layers(self.nn_params, nn_map, len(nn_map))
-        learn(b_c,self.nn_params, 7, X, Y_or)
+        learn(b_c,self.nn_params, 7, X, Y_or, 75)
         compil_serializ(self.nn_params, b_c, self.nn_params.list_, len(nn_map) - 1, "weight2" )
         print("in test_7 after learn matr")
         for i in self.nn_params.list_:
