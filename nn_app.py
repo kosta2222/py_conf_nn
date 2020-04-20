@@ -21,13 +21,13 @@ def calc_out_error(nn_params:NnParams,objLay:nnLay, targets:list):
     :return:
     """
     for row in range(objLay.out):
-        nn_params.out_errors[row] = (objLay.hidden[row] - targets[row]) * operations(nn_params.act_fu, objLay.cost_signals[row], 0.42, 0, 0, "", nn_params)
+        nn_params.out_errors[row] = (objLay.hidden[row] - targets[row]) * operations(nn_params.act_fu + 1, objLay.cost_signals[row], 0.42, 0, 0, "", nn_params)
 
 
 def calc_hid_error(nn_params:NnParams, objLay:nnLay, essential_gradients:list, entered_vals:list):
     for elem in range(objLay.in_):
         for row in range(objLay.out):
-            objLay.errors[elem]+=essential_gradients[row] * objLay.matrix[row][elem]  * operations(nn_params.act_fu, entered_vals[elem], 0, 0, 0, "", nn_params)
+            objLay.errors[elem]+=essential_gradients[row] * objLay.matrix[row][elem]  * operations(nn_params.act_fu + 1, entered_vals[elem], 0, 0, 0, "", nn_params)
     # print("in calc_hid_error essential_gradients",essential_gradients)
     # print("in calc_hid_error entered_vals",entered_vals)
     # print("in calc_hid_error errors",objLay.errors)
@@ -194,7 +194,7 @@ def backpropagate(nn_params:NnParams):
 
 # заполнить матрицу весов рандомными значениями по He, исходя из количесва входов и выходов,
 # записать результат в вектор слоев(параметр matrix), здесь проблема матрица неправильно заполняется
-def set_io(objLay:nnLay, inputs, outputs):
+def set_io(nn_params:NnParams, objLay:nnLay, inputs, outputs):
     objLay.in_=inputs
     objLay.out=outputs
     for row in range(outputs):
@@ -216,11 +216,11 @@ def initiate_layers(nn_params:NnParams,network_map:tuple,size):
     nn_params.nlCount = size - 1
     nn_params.inputNeurons = network_map[0]
     nn_params.outputNeurons = network_map[nn_params.nlCount]
-    set_io(nn_params.list_[0],network_map[0],network_map[1])
+    set_io(nn_params, nn_params.list_[0],network_map[0],network_map[1])
     for i in range(1, nn_params.nlCount ):# след. матр. д.б. (3,1) т.е. in(elems)=3 out(rows)=1
         if nn_params.with_bias:
            in_ = network_map[i] + 1
         else:
             in_ = network_map[i]
         out = network_map[i + 1]
-        set_io(nn_params.list_[i], in_, out)
+        set_io(nn_params, nn_params.list_[i], in_, out)

@@ -4,7 +4,7 @@ from nn_app import train, initiate_layers, get_min_square_err, answer_nn_direct,
 get_mean
 from NN_params import NnParams   # импортруем параметры сети
 from serial_deserial_func import deserializ
-from nn_constants import bc_bufLen
+from nn_constants import bc_bufLen, RELU, LEAKY_RELU, SIGMOID, TAN
 #----------------------Основные параметры сети----------------------------------
 # создать параметры сети
 def create_nn_params():
