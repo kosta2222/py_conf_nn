@@ -30,6 +30,7 @@ def py_pack (b_c:list, op_i, val_i_or_fl):
         for i in st.pack('<f', val_i_or_fl):
             b_c[p] = i.to_bytes(1, 'little')
             p+=1
+
     elif op_i == push_i:
         b_c[p] = st.pack('B', push_i)
         p+=1
@@ -114,11 +115,13 @@ def vm_to_deserialize(nn_params:NnParams, list_:list, bin_buf:list):
     while (op != stop):
         # загружаем на стек количество входов и выходов ядра
         # чтение операции с параметром
-        print(ops_name[op])
+        print(ops_name[op],end=' ')
         if  op == push_i:
             sp_op+=1
             ip+=1
+            print("arg",bin_buf[ip])
             ops_st[sp_op] = bin_buf[ip]
+
         # загружаем на стек элементы матриц
         # чтение операции с параметром
         elif op == push_fl:
@@ -200,9 +203,9 @@ def compil_serializ(nn_params:NnParams, b_c:list, list_:nnLay, len_lst, f_name):
     stub = 0
     matrix=[0]*(max_in_nn * max_rows_orOut)
     if nn_params.with_bias:
-        with_bias_i = 0
-    else:
         with_bias_i = 1
+    else:
+        with_bias_i = 0
     py_pack(b_c, push_i, with_bias_i)
     py_pack(b_c, with_bias, stub)
 
