@@ -85,10 +85,10 @@ def feed_forwarding(nn_params:NnParams,ok:bool, debug:int):
          backpropagate(nn_params)
 
 def feed_forwarding_on_contrary(nn_params:NnParams, ok:bool, debug:int):
-    make_hidden_on_contrary(nn_params.list_[nn_params.nlCount - 1 ], nn_params.inputs, debug)
+    make_hidden_on_contrary(nn_params, nn_params.list_[nn_params.nlCount - 1 ], nn_params.inputs, debug)
     print("in feed_forwarding_on_contrary nn_params.nlCount - 1.out",nn_params.list_[nn_params.nlCount - 1 ].out)
     for i in range(nn_params.nlCount - 2, -1, -1):
-        make_hidden_on_contrary(nn_params.list_[i], get_hidden(nn_params.list_[i + 1]), debug)
+        make_hidden_on_contrary(nn_params, nn_params.list_[i], get_hidden(nn_params.list_[i + 1]), debug)
     if ok:
         for i in range(nn_params.inputNeurons):
             print("%d item val %f"%(i + 1,nn_params.list_[0].hidden[i]))

@@ -21,8 +21,9 @@ def py_pack (b_c:list, op_i, val_i_or_fl):
     :return: следующий индекс куда можно записать команду stop
     """
     global p
-    # ops_name = ['push_i', 'push_fl', 'make_kernel', 'with_bias', 'stop']  # отпечатка команд [для отладки]
-    # print("in py_pack op",ops_name[op_i],"val_i_or_fl",val_i_or_fl)
+    ops_name = ['push_i', 'push_fl', 'make_kernel', 'with_bias', 'determe_act_func', 'determe_alpha_leaky_relu',
+    'determe_alpha_sigmoid', 'determe_alpha_and_beta_tan', 'stop']  # отпечатка команд [для отладки]
+    print("in py_pack op",ops_name[op_i],"val_i_or_fl",val_i_or_fl)
     if op_i == push_fl:
         b_c[p] = st.pack('B', push_fl)
         p+=1
@@ -40,6 +41,22 @@ def py_pack (b_c:list, op_i, val_i_or_fl):
     elif op_i == with_bias:
         b_c[p] = st.pack('B', with_bias)
         p+=1
+    elif op_i == with_bias:
+        b_c[p] = st.pack('B', with_bias)
+        p+=1
+    elif op_i == determe_act_func:
+        b_c[p] = st.pack('B', determe_act_func)
+        p+=1
+    elif op_i == determe_alpha_leaky_relu:
+        b_c[p] = st.pack('B', determe_alpha_leaky_relu)
+        p+=1
+    elif op_i == determe_alpha_sigmoid:
+        b_c[p] = st.pack('B', determe_alpha_sigmoid)
+        p+=1
+    elif op_i == determe_alpha_and_beta_tan:
+        b_c[p] = st.pack('B', determe_alpha_and_beta_tan)
+        p+=1
+
 
 
 
@@ -82,7 +99,8 @@ def vm_to_deserialize(nn_params:NnParams, list_:list, bin_buf:list):
     :return:
     """
     print("in vm_to_deserialize")
-    ops_name =['push_i', 'push_fl', 'make_kernel','with_bias', 'stop']
+    ops_name = ['push_i', 'push_fl', 'make_kernel', 'with_bias', 'determe_act_func', 'determe_alpha_leaky_relu',
+                'determe_alpha_sigmoid', 'determe_alpha_and_beta_tan', 'stop']  # отпечатка команд [для отладки]
     matrix_el_st = [0] * max_stack_matrEl # стек для временного размещения элементов матриц из файла потом этот стек
     # сворачиваем в матрицу слоя после команды make_kernel
     ops_st = [0] * max_stack_otherOp      # стек для количества входов и выходов (это целые числа)
@@ -187,6 +205,9 @@ def compil_serializ(nn_params:NnParams, b_c:list, list_:nnLay, len_lst, f_name):
         with_bias_i = 1
     py_pack(b_c, push_i, with_bias_i)
     py_pack(b_c, with_bias, stub)
+
+    py_pack(b_c, push_i, nn_params.act_fu)
+    py_pack(b_c, determe_act_func, stub)
     # разбираемся с параметрами активациооных функции - по умолчанию они уже заданы в nn_params
     if nn_params.act_fu == LEAKY_RELU:
         py_pack(b_c, push_fl, nn_params.alpha_leaky_relu)

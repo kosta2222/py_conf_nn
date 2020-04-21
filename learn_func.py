@@ -103,7 +103,7 @@ class TestLay(u.TestCase):
        print("in test 8",nn_params1.with_bias)
        for i in nn_params1.list_:
           print(i.matrix)
-       print(answer_nn_direct(nn_params1, [0, 1], 1))
+       # print(answer_nn_direct(nn_params1, [0, 1], 1))
        print("*ON CONTRARY*")
        answer_nn_direct_on_contrary(nn_params1, [0], 1)
     # def test_9(self):
