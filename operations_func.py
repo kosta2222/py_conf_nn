@@ -1,6 +1,6 @@
 from nn_constants import RELU_DERIV, RELU, TRESHOLD_FUNC, TRESHOLD_FUNC_DERIV, LEAKY_RELU, LEAKY_RELU_DERIV,\
-SIGMOID, SIGMOID_DERIV, DEBUG, DEBUG_STR, INIT_W_HE, INIT_W_GLOROT_V1, INIT_W_HABR, INIT_W_MY, INIT_W_UNIFORM,\
-    TAN, TAN_DERIV
+SIGMOID, SIGMOID_DERIV, DEBUG, DEBUG_STR, INIT_W_HE, INIT_W_GLOROT_MY, INIT_W_HABR, INIT_W_MY, INIT_W_UNIFORM,\
+    TAN, TAN_DERIV, INIT_W_HE_MY
 from NN_params import NnParams
 import numpy as np
 import math
@@ -52,14 +52,26 @@ def operations( op , a, b, c, d, str_, nn_params:NnParams):
         return 2 * np.random.random() - 1
     elif op == INIT_W_HE:
         return np.random.randn() * math.sqrt(2 / a)
+    elif op == INIT_W_HE_MY:
+        return np.random.randn() * math.sqrt(2 / a)
+        if ready:
+            ready = False
+            return -math.sqrt(2 / a) * 0.567141530112327
+        ready = True
+        return math.sqrt(2 / a) * 0.567141530112327
     elif op == INIT_W_MY:
         if ready:
             ready = False
-            return 0.567141530112327
+            return -0.567141530112327
         ready = True
         return 0.567141530112327
-    elif op ==INIT_W_GLOROT_V1:
-        return 2 / (a + b)
+    elif op ==INIT_W_GLOROT_MY:
+        if ready:
+            ready = False
+            return -2 / (a + b) * 0.567141530112327
+        ready = True
+        return 2 / (a + b) * 0.567141530112327
+
     elif op == INIT_W_UNIFORM:
         print("in op  INIT_W_UNIFORM a=",a,"b=",b)
         return a + np.random.random() * (b - a)

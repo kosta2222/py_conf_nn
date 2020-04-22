@@ -76,7 +76,7 @@ class TestLay(u.TestCase):
          self.nn_params.with_bias = False
          self.nn_params.with_adap_lr = True
          self.nn_params.lr = 0.01
-         self.nn_params.act_fu = SIGMOID
+         self.nn_params.act_fu = RELU
     def test_7(self):
         nn_map = (2, 3, 1)
         X = [[1, 1], [1, 0], [0, 1], [0, 0]]
@@ -91,7 +91,7 @@ class TestLay(u.TestCase):
 
         b_c = [0] * bc_bufLen  # буффер для сериализации матричных элементов и входов
         initiate_layers(self.nn_params, nn_map, len(nn_map))
-        learn(b_c,self.nn_params, 7, X, Y_or, 75)
+        learn(b_c,self.nn_params, 7, X, Y_or, 100)
         compil_serializ(self.nn_params, b_c, self.nn_params.list_, len(nn_map) - 1, "weight2" )
         print("in test_7 after learn matr")
         for i in self.nn_params.list_:

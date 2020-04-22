@@ -21,7 +21,7 @@ TRESHOLD_FUNC_DERIV = 6
 LEAKY_RELU = 7
 LEAKY_RELU_DERIV = 8
 INIT_W_HE = 9
-INIT_W_GLOROT_V1 = 10
+INIT_W_GLOROT_MY = 10
 DEBUG = 11
 DEBUG_STR = 12
 INIT_W_HABR = 13
@@ -30,6 +30,7 @@ INIT_W_UNIFORM = 15
 TAN =16
 TAN_DERIV =17
 NOP = 18
+INIT_W_HE_MY = 19
 
 # байт-коды для сериализации/десериализации-загрузка входов/выходов,загрузка элементов матрицы,сворачивание то есть создания ядра, есть ли биасы,остановка ВМ
 push_i = 0

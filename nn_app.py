@@ -4,7 +4,8 @@ import numpy as np
 import struct as st
 from nn_constants import max_in_nn, max_trainSet_rows, max_validSet_rows, max_rows_orOut, max_am_layer\
 , max_am_epoch, max_am_objMse, max_stack_matrEl, max_stack_otherOp, bc_bufLen
-from nn_constants import RELU, RELU_DERIV, INIT_W_HE, INIT_W_MY, SIGMOID, SIGMOID_DERIV, TAN, TAN_DERIV
+from nn_constants import RELU, RELU_DERIV, INIT_W_HE, INIT_W_MY, SIGMOID, SIGMOID_DERIV, TAN, TAN_DERIV, INIT_W_GLOROT_MY,\
+INIT_W_HE_MY
 from NN_params import NnParams   # импортруем параметры сети
 from Nn_lay import nnLay   # импортируем слой
 from work_with_arr import copy_vector
@@ -200,7 +201,7 @@ def set_io(nn_params:NnParams, objLay:nnLay, inputs, outputs):
     objLay.out=outputs
     for row in range(outputs):
         for elem in range(inputs):
-            objLay.matrix[row][elem] =operations(INIT_W_MY, inputs, 0, 0, 0, "", nn_params)
+            objLay.matrix[row][elem] = operations(INIT_W_HE_MY, inputs+1, outputs, 0, 0, "", nn_params)
     # print("in set_io matrix", objLay.matrix)
 
 
