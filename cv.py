@@ -3,7 +3,6 @@ from nn_app import answer_nn_direct
 from NN_params import NnParams
 k = 0
 def cross_validation(nn_params:NnParams, X_test: list, Y_test: list):
-    # print("***CV***")
     """
     Производит (кросс-валидацию) предсказание и сверка ответов
     по всему  Обучающий набор/тестовая выборка
@@ -15,10 +14,11 @@ def cross_validation(nn_params:NnParams, X_test: list, Y_test: list):
     scores = []
     res = 0
     out_nn=None
-    res_acc = 1
+    res_acc = 0
     rows = len(X_test)
     wi_y_test = len(Y_test[0])
     n = 0
+    elem_of_out_nn = 0
     answer = 0
     for i in range(rows):
         x_test = X_test[i]
@@ -28,16 +28,16 @@ def cross_validation(nn_params:NnParams, X_test: list, Y_test: list):
         # print("in cross val out_nn",out_nn)
         # res=check_oneHotVecs(scores, out_nn, y_test, len(y_test))
         for i in range(wi_y_test):
-            n = out_nn[i]
+            elem_of_out_nn = out_nn[i]
             answer = y_test[i]
-            if (n > 0.5):
-                n = 1
+            if (elem_of_out_nn > 0.5):
+                elem_of_out_nn = 1
                 print("output vector[ %f ] " % 1, end=' ')
             else:
-                n = 0
+                elem_of_out_nn = 0
                 print("output vector[ %f ] " % 0, end=' ');
             print("expected [ %f ]\n" % answer);
-            if n == answer:
+            if elem_of_out_nn == answer:
                 scores.append(1)
             else:
                 scores.append(0)

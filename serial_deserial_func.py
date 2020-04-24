@@ -1,17 +1,17 @@
 from work_with_arr import copy_matrixAsStaticSquare_toRibon
-from nn_constants import bc_bufLen, max_in_nn, max_rows_orOut, max_stack_matrEl, max_stack_otherOp
+from nn_constants import bc_bufLen, max_in_nn, max_rows_orOut, max_stack_matrEl, max_stack_otherOp,\
+    push_i, push_fl, make_kernel, with_bias, stop,\
+    RELU, LEAKY_RELU, SIGMOID, TAN,\
+    determe_act_func, determe_alpha_leaky_relu, determe_alpha_sigmoid, determe_alpha_and_beta_tan
 from Nn_lay import nnLay
 import struct as st
 from NN_params import NnParams
 from util_func import _0_
 #----------------------сериализации/десериализации------------------------------
-# байт-коды для сериализации/десериализации-загрузка входов/выходов,загрузка элементов матрицы,сворачивание то есть создания ядра,остановка ВМ
-push_i = 0
-push_fl = 1
-make_kernel = 2
-stop = 3
 
-p=0
+
+
+p=0  # указатель на элементы байт-кода 
 
 def py_pack (b_c:list, op_i, val_i_or_fl):
     """
@@ -21,7 +21,8 @@ def py_pack (b_c:list, op_i, val_i_or_fl):
     :return: следующий индекс куда можно записать команду stop
     """
     global p
-    ops_name = ['push_i', 'push_fl', 'make_kernel', 'stop']
+    ops_name = ['push_i', 'push_fl', 'make_kernel', 'with_bias', 'determe_act_func', 'determe_alpha_leaky_relu',
+    'determe_alpha_sigmoid', 'determe_alpha_and_beta_tan', 'stop']  # отпечатка команд [для отладки]
     print("in py_pack op",ops_name[op_i],"val_i_or_fl",val_i_or_fl)
     if op_i == push_fl:
         b_c[p] = st.pack('B', push_fl)
@@ -29,6 +30,7 @@ def py_pack (b_c:list, op_i, val_i_or_fl):
         for i in st.pack('<f', val_i_or_fl):
             b_c[p] = i.to_bytes(1, 'little')
             p+=1
+
     elif op_i == push_i:
         b_c[p] = st.pack('B', push_i)
         p+=1
@@ -37,6 +39,25 @@ def py_pack (b_c:list, op_i, val_i_or_fl):
     elif op_i == make_kernel:
         b_c[p] = st.pack('B', make_kernel)
         p+=1
+    elif op_i == with_bias:
+        b_c[p] = st.pack('B', with_bias)
+        p+=1
+    elif op_i == with_bias:
+        b_c[p] = st.pack('B', with_bias)
+        p+=1
+    elif op_i == determe_act_func:
+        b_c[p] = st.pack('B', determe_act_func)
+        p+=1
+    elif op_i == determe_alpha_leaky_relu:
+        b_c[p] = st.pack('B', determe_alpha_leaky_relu)
+        p+=1
+    elif op_i == determe_alpha_sigmoid:
+        b_c[p] = st.pack('B', determe_alpha_sigmoid)
+        p+=1
+    elif op_i == determe_alpha_and_beta_tan:
+        b_c[p] = st.pack('B', determe_alpha_and_beta_tan)
+        p+=1
+
 
 
 
@@ -78,7 +99,9 @@ def vm_to_deserialize(nn_params:NnParams, list_:list, bin_buf:list):
     :param bin_buf: список байт - комманд из файла
     :return:
     """
-    ops_name =['push_i', 'push_fl', 'make_kernel', 'stop']
+    print("in vm_to_deserialize")
+    ops_name = ['push_i', 'push_fl', 'make_kernel', 'with_bias', 'determe_act_func', 'determe_alpha_leaky_relu',
+                'determe_alpha_sigmoid', 'determe_alpha_and_beta_tan', 'stop']  # отпечатка команд [для отладки]
     matrix_el_st = [0] * max_stack_matrEl # стек для временного размещения элементов матриц из файла потом этот стек
     # сворачиваем в матрицу слоя после команды make_kernel
     ops_st = [0] * max_stack_otherOp      # стек для количества входов и выходов (это целые числа)
@@ -91,25 +114,27 @@ def vm_to_deserialize(nn_params:NnParams, list_:list, bin_buf:list):
     op = bin_buf[ip]
     while (op != stop):
         # загружаем на стек количество входов и выходов ядра
+        # чтение операции с параметром
+        print(ops_name[op],end=' ')
         if  op == push_i:
             sp_op+=1
             ip+=1
+            print("arg",bin_buf[ip])
             ops_st[sp_op] = bin_buf[ip]
-            # break
+
         # загружаем на стек элементы матриц
+        # чтение операции с параметром
         elif op == push_fl:
             i_0 = bin_buf[ip + 1]
             i_1 = bin_buf[ip + 2]
             i_2 = bin_buf[ip + 3]
             i_3 = bin_buf[ip + 4]
             arg=st.unpack('<f', bytes(list([i_0, i_1, i_2, i_3])))
-            # print("arg",list([i_0, i_1, i_2, i_3]))
             sp_ma+=1
             matrix_el_st[sp_ma] = arg[0]
             ip += 4
-            # ip+=1
-            # break
         # создаем одно ядро в массиве
+        # пришла команда создать ядро
         elif op == make_kernel:
             make_kernel_f(nn_params, list_, n_lay, matrix_el_st, ops_st, sp_op)
             # переходим к следующему индексу ядра
@@ -117,14 +142,41 @@ def vm_to_deserialize(nn_params:NnParams, list_:list, bin_buf:list):
             # зачищаем стеки
             sp_op = -1
             sp_ma = -1
-            # break
+        # пришла команда узнать пользуемся ли биасами
+        # надо извлечь параметр
+        elif op == with_bias:
+            is_with_bias = ops_st[sp_op]
+            sp_op-=1
+            if is_with_bias == 1:
+                nn_params.with_bias = True
+            elif is_with_bias == 0:
+                nn_params.with_bias = False
+        elif op == determe_act_func:
+            what_func = ops_st[sp_op]
+            sp_op-=1
+            nn_params.act_fu = what_func
+        elif op == determe_alpha_and_beta_tan:
+            beta = ops_st[sp_op]
+            sp_op-=1
+            alpha = ops_st[sp_op]
+            sp_op-=1
+            nn_params.alpha_tan = alpha
+            nn_params.beta_tan = beta
+        elif op == determe_alpha_sigmoid:
+            alpha = ops_st[sp_op]
+            sp_op-=1
+            nn_params.alpha_sigmoid = alpha
+        elif op == determe_alpha_leaky_relu:
+            alpha = ops_st[sp_op]
+            sp_op-=1
+            nn_params.alpha_leaky_relu = alpha
         # показываем на следующую инструкцию
         ip+=1
         op = bin_buf[ip]
     # также подсчитаем сколько у наc ядер
     nn_params.nlCount = n_lay
     # находим количество входов
-    nn_params.inputNeurons=(nn_params.list_[0].in_)  #-1  # -1 зависит от биасов
+    nn_params.inputNeurons = nn_params.list_[0].in_ #-1  # -1 зависит от биасов
     # находим количество выходов когда образовали сеть
     nn_params.outputNeurons=nn_params.list_[nn_params.nlCount-1].out
     _0_("vm")
@@ -144,11 +196,32 @@ def deserializ(nn_params:NnParams, list_:list, f_name:str):
     _0_("vm_deserializ")
 
 
-def compil_serializ(b_c:list, list_:nnLay, len_lst, f_name):
+def compil_serializ(nn_params:NnParams, b_c:list, list_:nnLay, len_lst, f_name):
     in_=0
     out=0
-    p=0
+    with_bias_i = 0
+    stub = 0
     matrix=[0]*(max_in_nn * max_rows_orOut)
+    if nn_params.with_bias:
+        with_bias_i = 1
+    else:
+        with_bias_i = 0
+    py_pack(b_c, push_i, with_bias_i)
+    py_pack(b_c, with_bias, stub)
+
+    py_pack(b_c, push_i, nn_params.act_fu)
+    py_pack(b_c, determe_act_func, stub)
+    # разбираемся с параметрами активациооных функции - по умолчанию они уже заданы в nn_params
+    if nn_params.act_fu == LEAKY_RELU:
+        py_pack(b_c, push_fl, nn_params.alpha_leaky_relu)
+        py_pack(b_c, determe_alpha_leaky_relu, stub)
+    elif nn_params.act_fu == SIGMOID:
+        py_pack(b_c, push_fl, nn_params.alpha_sigmoid)
+        py_pack(b_c,determe_alpha_sigmoid, stub)
+    elif nn_params.act_fu == TAN:
+        py_pack(b_c, push_fl, nn_params.alpha_tan)
+        py_pack(b_c, push_fl, nn_params.beta_tan)
+        py_pack(b_c, determe_alpha_and_beta_tan, stub)
     for i in range(len_lst):
         in_=list_[i].in_
         out=list_[i].out
@@ -157,6 +230,6 @@ def compil_serializ(b_c:list, list_:nnLay, len_lst, f_name):
         copy_matrixAsStaticSquare_toRibon(list_[i].matrix, matrix, in_, out)
         for j in range(in_ * out):
             py_pack(b_c, push_fl, matrix[j])
-        py_pack(b_c, make_kernel, 0)
+        py_pack(b_c, make_kernel, stub)
     dump_bc(b_c, f_name)
 #----------------------------------------------------------------------
