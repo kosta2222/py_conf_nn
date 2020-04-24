@@ -81,7 +81,7 @@ class TestLay(u.TestCase):
         nn_map = (2, 3, 1)
         X = [[1, 1], [1, 0], [0, 1], [0, 0]]
         Y_or = [[1], [1], [1], [0]]
-        # Y_and = [[1], [0], [0], [0]]
+        Y_and = [[1], [0], [0], [0]]
         # X = [[0, 0, 0, 0], [0, 0, 0, 1], [0, 0, 1, 0], [0, 0, 1, 1], [0, 1, 0, 0], [0, 1, 0, 1], [0, 1, 1, 0],
         #      [0, 1, 1, 1], [1, 0, 0, 0], [1, 0, 0, 1], [1, 0, 1, 0], [1, 0, 1, 1], [1, 1, 0, 0], [1, 1, 0, 1],
         #      [1, 1, 1, 0], [1, 1, 1, 1]]
@@ -91,7 +91,7 @@ class TestLay(u.TestCase):
 
         b_c = [0] * bc_bufLen  # буффер для сериализации матричных элементов и входов
         initiate_layers(self.nn_params, nn_map, len(nn_map))
-        learn(b_c,self.nn_params, 7, X, Y_or, 100)
+        learn(b_c,self.nn_params, 7, X, Y_and, 100)
         compil_serializ(self.nn_params, b_c, self.nn_params.list_, len(nn_map) - 1, "weight2" )
         print("in test_7 after learn matr")
         for i in self.nn_params.list_:

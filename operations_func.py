@@ -34,14 +34,14 @@ def operations( op , a, b, c, d, str_, nn_params:NnParams):
         return 1
     elif op == LEAKY_RELU:
         if (a <= 0):
-            return alpha_leaky_relu * a
+            return alpha_leaky_relu 
         else:
-            return a
+            return 1
     elif op == LEAKY_RELU_DERIV:
         if (a <= 0):
             return alpha_leaky_relu
         else:
-            return 2
+            return 1
     elif op == SIGMOID:
         return 2.0 / (1 + math.exp(alpha_sigmoid * (-a)))
     elif op == SIGMOID_DERIV:
