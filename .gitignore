@@ -2,6 +2,7 @@
 *.bac
 *.bak
 *.bash
+*.my
 .idea/
 venv/
 __pycache__/
