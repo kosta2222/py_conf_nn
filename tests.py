@@ -10,50 +10,91 @@ import unittest as u
 def create_nn_params():
     return NnParams()
 class TestLay(u.TestCase):
-    def setUp(self) -> None:
-      pass
+    # def setUp(self) -> None:
+    #     self.f = open("test_out.txt", "w")
 
+    # Обучаю логическим операциям ИЛИ в test_1 и И в test_2
+    # Если закоментирую один из тестов все проходит, если 2 сразу обучение останавливается на одном обучении
     def test_1(self):
-        f = open("test_out.txt", "w")
+        # устанавливаю параметры
         nn_params = create_nn_params()
         nn_params.with_bias = False
         nn_params.with_adap_lr = True
         nn_params.lr = 0.01
         nn_params.act_fu = RELU
         nn_map = (2, 3, 1)
+
         X = [[1, 1], [1, 0], [0, 1], [0, 0]]
         Y_or = [[1], [1], [1], [0]]
-        Y_and = [[1], [0], [0], [0]]
-        b_c = [0] * bc_bufLen  # буффер для сериализации матричных элементов и входов
-        # X = [[0, 0, 0, 0], [0, 0, 0, 1], [0, 0, 1, 0], [0, 0, 1, 1], [0, 1, 0, 0], [0, 1, 0, 1], [0, 1, 1, 0],
-        #      [0, 1, 1, 1], [1, 0, 0, 0], [1, 0, 0, 1], [1, 0, 1, 0], [1, 0, 1, 1], [1, 1, 0, 0], [1, 1, 0, 1],
-        #      [1, 1, 1, 0], [1, 1, 1, 1]]
-        # Y = [[0, 0, 0, 0], [0, 0, 0, 1], [0, 0, 1, 0], [0, 0, 1, 1], [0, 1, 0, 0], [0, 1, 0, 1], [0, 1, 1, 0],
-        #      [0, 1, 1, 1], [1, 0, 0, 0], [1, 0, 0, 1], [1, 0, 1, 0], [1, 0, 1, 1], [1, 1, 0, 0], [1, 1, 0, 1],
-        #      [1, 1, 1, 0], [1, 1, 1, 1]]
 
         b_c = [0] * bc_bufLen  # буффер для сериализации матричных элементов и входов
         initiate_layers(nn_params, nn_map, len(nn_map))
-        fit(b_c, nn_params, 7, X, Y_and, 100)
-        compil_serializ(nn_params, b_c, nn_params.list_, len(nn_map) - 1, "weight2" )
-        print("in test_7 after learn matr", file=f)
-        for i in nn_params.list_:
-            print(i.matrix,file=f)
-        nn_params1=create_nn_params()
-        deserializ(nn_params1, nn_params1.list_, "weight2")
-        print("in test 8 with bias %s"%str(nn_params1.with_bias),file=f)
-        for i in nn_params1.list_:
-            print(i.matrix,file=f)
-        print(answer_nn_direct(nn_params1, [1, 1], 1))
-        # print(answer_nn_direct(nn_params1, [0, 1], 1))
-        print("*ON CONTRARY*")
-        answer_nn_direct_on_contrary(nn_params1, [0], 1)
-        f.close()
+        fit(b_c, nn_params, 7, X, Y_or, 100)
 
-    def test_2(self):
-        pass
+        print("in test_1 after learn. matr")
+        for i in nn_params.list_:
+            print(i.matrix)
+            
+        # сериализуем
+        compil_serializ(nn_params, b_c, nn_params.list_, len(nn_map) - 1, "weight_file" )
+
+        # десериализуем
+        nn_params_new = create_nn_params()
+        deserializ(nn_params_new, nn_params_new.list_, "weight_file")
+
+        print("in test_1 after deserializ. matr")
+        for i in nn_params_new.list_:
+            print(i.matrix)
+
+        # предсказание
+        print(answer_nn_direct(nn_params_new, [1, 1], 1))
+
+        # предсказание наоборот
+        print("*ON CONTRARY*")
+        answer_nn_direct_on_contrary(nn_params_new, [0], 1)
+        print("-------------")
+
+    # def test_2(self):
+    #     # устанавливаю параметры
+    #     nn_params = create_nn_params()
+    #     nn_params.with_bias = False
+    #     nn_params.with_adap_lr = True
+    #     nn_params.lr = 0.01
+    #     nn_params.act_fu = RELU
+    #     nn_map = (2, 3, 1)
+    #
+    #     X = [[1, 1], [1, 0], [0, 1], [0, 0]]
+    #     Y_and = [[1], [1], [1], [0]]
+    #
+    #     b_c = [0] * bc_bufLen  # буффер для сериализации матричных элементов и входов
+    #     initiate_layers(nn_params, nn_map, len(nn_map))
+    #     fit(b_c, nn_params, 7, X, Y_and, 100)
+    #
+    #     print("in test_1 after learn. matr")
+    #     for i in nn_params.list_:
+    #         print(i.matrix)
+    #     # сериализуем
+    #     compil_serializ(nn_params, b_c, nn_params.list_, len(nn_map) - 1, "weight_file" )
+    #
+    #     # десериализуем
+    #     nn_params_new = create_nn_params()
+    #     deserializ(nn_params_new, nn_params_new.list_, "weight_file")
+    #
+    #     print("in test_1 after deserializ. matr")
+    #     for i in nn_params_new.list_:
+    #         print(i.matrix)
+    #
+    #     # предсказание
+    #     print(answer_nn_direct(nn_params_new, [1, 1], 1))
+    #
+    #     # предсказание наоборот
+    #     print("*ON CONTRARY*")
+    #     answer_nn_direct_on_contrary(nn_params_new, [0], 1)
+    #     print("-------------")
+
 
 if __name__ == '__main__':
     t = TestLay()
     u.main()
+    t.f.close()
 

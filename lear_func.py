@@ -64,14 +64,14 @@ def calc_hid_zero_lay(zeroLay:nnLay,essential_gradients:list):
     for elem in range(zeroLay.in_):
         for row in range(zeroLay.out):
             zeroLay.errors[elem]+=essential_gradients[row] * zeroLay.matrix[row][elem]
-    print("in calc_hid_zero_lay",zeroLay.errors)
+    # print("in calc_hid_zero_lay",zeroLay.errors)
 
 
 def upd_matrix(nn_params:NnParams, objLay:nnLay, entered_vals):
     for row in range(objLay.out):
         for elem in range(objLay.in_):
             objLay.matrix[row][elem]-= nn_params.lr * objLay.errors[elem] * entered_vals[elem]
-    print("in upd_matrix matrix state",objLay.matrix)
+    # print("in upd_matrix matrix state",objLay.matrix)
 
 
 def feed_forwarding(nn_params:NnParams,ok:bool, debug:int):
@@ -87,7 +87,7 @@ def feed_forwarding(nn_params:NnParams,ok:bool, debug:int):
 
 def feed_forwarding_on_contrary(nn_params:NnParams, ok:bool, debug:int):
     make_hidden_on_contrary(nn_params, nn_params.list_[nn_params.nlCount - 1 ], nn_params.inputs, debug)
-    print("in feed_forwarding_on_contrary nn_params.nlCount - 1.out",nn_params.list_[nn_params.nlCount - 1 ].out)
+    # print("in feed_forwarding_on_contrary nn_params.nlCount - 1.out",nn_params.list_[nn_params.nlCount - 1 ].out)
     for i in range(nn_params.nlCount - 2, -1, -1):
         make_hidden_on_contrary(nn_params, nn_params.list_[i], get_hidden(nn_params.list_[i + 1]), debug)
     if ok:
@@ -129,7 +129,7 @@ def answer_nn_direct_on_contrary(nn_params:NnParams,in_:list, debug):
 # Получить вектор входов, сделать матричный продукт и матричный продукт пропустить через функцию активации,
 # записать этот вектор в параметр слоя сети(hidden)
 def make_hidden(nn_params, objLay:nnLay, inputs:list, debug):
-    print("in make_hidden inputs",inputs)
+    # print("in make_hidden inputs",inputs)
     tmp_v = 0
     val = 0
     for row in range(objLay.out):
