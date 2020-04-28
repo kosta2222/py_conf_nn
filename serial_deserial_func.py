@@ -11,7 +11,7 @@ from util_func import _0_
 
 
 
-p=0  # указатель на элементы байт-кода 
+pos_bytecode=0  # указатель на элементы байт-кода 
 
 def py_pack (b_c:list, op_i, val_i_or_fl):
     """
@@ -20,51 +20,51 @@ def py_pack (b_c:list, op_i, val_i_or_fl):
     :param val_i_or_fl: число для серелизации - матричный элемент или количество входов выходов
     :return: следующий индекс куда можно записать команду stop
     """
-    global p
+    global pos_bytecode
     ops_name = ['push_i', 'push_fl', 'make_kernel', 'with_bias', 'determe_act_func', 'determe_alpha_leaky_relu',
     'determe_alpha_sigmoid', 'determe_alpha_and_beta_tan', 'stop']  # отпечатка команд [для отладки]
     print("in py_pack op",ops_name[op_i],"val_i_or_fl",val_i_or_fl)
     if op_i == push_fl:
         b_c[p] = st.pack('B', push_fl)
-        p+=1
+        pos_butecode+=1
         for i in st.pack('<f', val_i_or_fl):
             b_c[p] = i.to_bytes(1, 'little')
-            p+=1
+            pos_butecode+=1
 
     elif op_i == push_i:
         b_c[p] = st.pack('B', push_i)
-        p+=1
+        pos_butecode+=1
         b_c[p] = st.pack('B', val_i_or_fl)
-        p+=1
+        pos_butecode+=1
     elif op_i == make_kernel:
         b_c[p] = st.pack('B', make_kernel)
-        p+=1
+        pos_butecode+=1
     elif op_i == with_bias:
         b_c[p] = st.pack('B', with_bias)
-        p+=1
+        pos_butecode+=1
     elif op_i == with_bias:
         b_c[p] = st.pack('B', with_bias)
-        p+=1
+        pos_butecode+=1
     elif op_i == determe_act_func:
         b_c[p] = st.pack('B', determe_act_func)
-        p+=1
+        pos_butecode+=1
     elif op_i == determe_alpha_leaky_relu:
         b_c[p] = st.pack('B', determe_alpha_leaky_relu)
-        p+=1
+        pos_butecode+=1
     elif op_i == determe_alpha_sigmoid:
         b_c[p] = st.pack('B', determe_alpha_sigmoid)
-        p+=1
+        pos_butecode+=1
     elif op_i == determe_alpha_and_beta_tan:
         b_c[p] = st.pack('B', determe_alpha_and_beta_tan)
-        p+=1
+        pos_butecode+=1
 
 
 
 
 def  dump_bc(b_c, f_name):
-  global p
+  global pos_bytecode
   b_c[p] = stop.to_bytes(1,"little")
-  p+=1
+  pos_butecode+=1
   with open(f_name,'wb') as f:
      for i in range(p):
          f.write(b_c[i])
