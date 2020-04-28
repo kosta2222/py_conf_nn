@@ -1,4 +1,4 @@
-from cv import cross_validation
+from cv import evaluate
 from lear_func import train, initiate_layers, get_min_square_err, answer_nn_direct, answer_nn_direct_on_contrary,\
 get_mean
 
@@ -43,12 +43,12 @@ def fit(b_c:list, nn_params, epochcs, train_set:list, target_set:list, accuracy_
             print("in learn mse",mse)
         # if mse == 0:
         #     break
-        acc = cross_validation(nn_params, train_set, target_set)
+        acc = evaluate(nn_params, train_set, target_set)
         if acc == accuracy_shureness:
             break
         iteration+=1
     print("***CV***")
-    cross_validation(nn_params, train_set, target_set)
+    evaluate(nn_params, train_set, target_set)
     # compil_serializ(b_c, nn_params.list_,len(nn_map)-1,"wei_wei")
 
 

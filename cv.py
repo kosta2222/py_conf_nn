@@ -2,7 +2,7 @@ from nn_constants import max_rows_orOut
 from lear_func import answer_nn_direct
 from NN_params import NnParams
 k = 0
-def cross_validation(nn_params:NnParams, X_test: list, Y_test: list):
+def evaluate(nn_params:NnParams, X_test: list, Y_test: list):
     """
     Производит (кросс-валидацию) предсказание и сверка ответов
     по всему  Обучающий набор/тестовая выборка
