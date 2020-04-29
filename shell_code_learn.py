@@ -4,6 +4,11 @@ from nn_constants import bc_bufLen, RELU, LEAKY_RELU, SIGMOID, TAN
 from lear_func import initiate_layers, answer_nn_direct, answer_nn_direct_on_contrary
 from serial_deserial_func import compil_serializ
 from fit import fit
+"""
+X и Y означают двухмернй список обучения и ответов соответственно
+x_* и y_* - просто списки из этих матриц
+"""
+
 
 # создать параметры сети
 def create_nn_params():
@@ -21,9 +26,10 @@ push_fl = 1
 push_str = 2
 calc_vecs = 3
 fit_ = 4
-stop = 5
+recogn = 5
+stop = 6
 
-ops=["push_i","push_fl", "push_str", "calc_vecs","fit"]
+ops=["push_i","push_fl", "push_str", "calc_vecs","fit","recogn"]
 def console():
         b_c = [0] * len_
         input_ = ""
@@ -36,7 +42,7 @@ def console():
         cmd_in_ops = '<uninitialized>'
         pos_bytecode = -1
         shell_is_running = True
-        exit_flag = False
+        # exit_flag = False
         # while shell_is_running:
         print("Zdravstvuite ya sostavitel bait-coda dla etoi programmi")
         print("r vipolnit")
@@ -121,14 +127,16 @@ def vm_proc_to_learn(b_c:list):
         #  вычисление векторов это еще добавление к тренировочным матрицам
         elif op==calc_vecs:
             ord_as_devided_val = 0.0
-            float_x = []
+            float_x = [0] * nn_in_amount
             str_y = [0, 1]
             Y.append(str_y)
             str_x=steck_str[sp_str]
             sp_str-=1
+            cn_char = 0
             for chr in str_x:
                 ord_as_devided_val = ord(chr) / 255
-                float_x.append(ord_as_devided_val)
+                float_x[cn_char]= ord_as_devided_val
+                cn_char+= 1
             X.append(float_x)
 
             print("in vm in calc_ve:",X,Y)
@@ -145,7 +153,17 @@ def vm_proc_to_learn(b_c:list):
                for elem in range(len(X[row])):
                    X_new[row][elem] = X[row][elem]
            fit(None, nn_params, 10, X_new, Y, 100)
-           X_new.clear()
+           # X_new.clear()
+        elif op == recogn:
+            float_x = [0] * nn_in_amount
+            str_x = steck_str[sp_str]
+            sp_str-= 1
+            cn_char = 0
+            for chr in str_x:
+                ord_as_devided_val = ord(chr) / 255
+                float_x[cn_char] = ord_as_devided_val
+                cn_char+=1
+            print("*In vm in recogn",answer_nn_direct(nn_params, float_x, 1))
         else:
             print("Unknown bytecode -> %d"%op)
             return
