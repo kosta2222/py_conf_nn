@@ -31,7 +31,7 @@ stop = 6
 
 ops=["push_i","push_fl", "push_str", "calc_vecs","fit","recogn"]
 def console():
-        b_c = [0] * len_
+        b_c = [0] * len_* 3
         input_ = ""
         # splitted_cmd и splitted_cmd_src - т.к. работаем со статическим массивом
         splitted_cmd: list = [''] * 2
@@ -96,7 +96,7 @@ def vm_proc_to_learn(b_c:list):
     nn_params.with_bias = False
     nn_params.with_adap_lr = True
     nn_params.lr = 0.01
-    nn_params.act_fu = SIGMOID
+    nn_params.act_fu = TAN
     nn_params.alpha_sigmoid = 0.056
     nn_in_amount = 20
     nn_map = (nn_in_amount, 8, 2)
@@ -150,7 +150,7 @@ def vm_proc_to_learn(b_c:list):
                X_new.append(x_new)
 
            for row in range(len(X)):
-               for elem in range(len(X[row])):
+               for elem in range(nn_in_amount):
                    X_new[row][elem] = X[row][elem]
            fit(None, nn_params, 10, X_new, Y, 100)
            # X_new.clear()
