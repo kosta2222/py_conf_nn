@@ -1,4 +1,4 @@
-from cv import evaluate
+from cross_val_eval import evaluate
 from lear_func import train, initiate_layers, get_min_square_err, answer_nn_direct, answer_nn_direct_on_contrary,\
 get_mean
 

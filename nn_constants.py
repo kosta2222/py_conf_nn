@@ -33,12 +33,12 @@ NOP = 18
 INIT_W_HE_MY = 19
 
 # байт-коды для сериализации/десериализации-загрузка входов/выходов,загрузка элементов матрицы,сворачивание то есть создания ядра, есть ли биасы,остановка ВМ
-push_i = 0
-push_fl = 1
-make_kernel = 2
-with_bias = 3
-determe_act_func = 4
-determe_alpha_leaky_relu = 5
-determe_alpha_sigmoid = 6
-determe_alpha_and_beta_tan = 7
-stop = 8
+push_i = 1
+push_fl = 2
+make_kernel = 3
+with_bias = 4
+determe_act_func = 5
+determe_alpha_leaky_relu = 6
+determe_alpha_sigmoid = 7
+determe_alpha_and_beta_tan = 8
+stop = 9

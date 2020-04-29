@@ -13,6 +13,43 @@ from util_func import _0_
 
 pos_bytecode=0  # указатель на элементы байт-кода 
 
+def compil_serializ(nn_params:NnParams, b_c:list, list_:nnLay, len_lst, f_name):
+    in_=0
+    out=0
+    with_bias_i = 0
+    stub = 0
+    matrix=[0]*(max_in_nn * max_rows_orOut)
+    if nn_params.with_bias:
+        with_bias_i = 1
+    else:
+        with_bias_i = 0
+    py_pack(b_c, push_i, with_bias_i)
+    py_pack(b_c, with_bias, stub)
+
+    py_pack(b_c, push_i, nn_params.act_fu)
+    py_pack(b_c, determe_act_func, stub)
+    # разбираемся с параметрами активациооных функции - по умолчанию они уже заданы в nn_params
+    if nn_params.act_fu == LEAKY_RELU:
+        py_pack(b_c, push_fl, nn_params.alpha_leaky_relu)
+        py_pack(b_c, determe_alpha_leaky_relu, stub)
+    elif nn_params.act_fu == SIGMOID:
+        py_pack(b_c, push_fl, nn_params.alpha_sigmoid)
+        py_pack(b_c,determe_alpha_sigmoid, stub)
+    elif nn_params.act_fu == TAN:
+        py_pack(b_c, push_fl, nn_params.alpha_tan)
+        py_pack(b_c, push_fl, nn_params.beta_tan)
+        py_pack(b_c, determe_alpha_and_beta_tan, stub)
+    for i in range(len_lst):
+        in_=list_[i].in_
+        out=list_[i].out
+        py_pack(b_c, push_i,in_)
+        py_pack(b_c, push_i,out)
+        copy_matrixAsStaticSquare_toRibon(list_[i].matrix, matrix, in_, out)
+        for j in range(in_ * out):
+            py_pack(b_c, push_fl, matrix[j])
+        py_pack(b_c, make_kernel, stub)
+    print("in compil_serializ",b_c)
+    dump_bc(b_c, f_name)
 def py_pack (b_c:list, op_i, val_i_or_fl):
     """
     Добавляет в b_c буффер байт-комманды и сериализованные матричные числа как байты
@@ -65,10 +102,17 @@ def  dump_bc(b_c, f_name):
   global pos_bytecode
   b_c[pos_bytecode] = stop.to_bytes(1,"little")
   pos_bytecode+=1
+  # try:
   with open(f_name,'wb') as f:
-     len_bytecode = pos_bytecode
-     for i in range(len_bytecode):
-         f.write(b_c[i])
+       print("b_c",b_c)
+       len_bytecode = pos_bytecode
+       for i in range(len_bytecode):
+           print("i", b_c[i])
+           f.write(b_c[i])
+  pos_bytecode = 0
+  # except Exception:
+  #     print("i",i)
+  #     return
 
 
 def make_kernel_f(nn_params:NnParams, list_:list, lay_pos, matrix_el_st:list,  ops_st:list,  sp_op):
@@ -197,40 +241,5 @@ def deserializ(nn_params:NnParams, list_:list, f_name:str):
     _0_("vm_deserializ")
 
 
-def compil_serializ(nn_params:NnParams, b_c:list, list_:nnLay, len_lst, f_name):
-    in_=0
-    out=0
-    with_bias_i = 0
-    stub = 0
-    matrix=[0]*(max_in_nn * max_rows_orOut)
-    if nn_params.with_bias:
-        with_bias_i = 1
-    else:
-        with_bias_i = 0
-    py_pack(b_c, push_i, with_bias_i)
-    py_pack(b_c, with_bias, stub)
 
-    py_pack(b_c, push_i, nn_params.act_fu)
-    py_pack(b_c, determe_act_func, stub)
-    # разбираемся с параметрами активациооных функции - по умолчанию они уже заданы в nn_params
-    if nn_params.act_fu == LEAKY_RELU:
-        py_pack(b_c, push_fl, nn_params.alpha_leaky_relu)
-        py_pack(b_c, determe_alpha_leaky_relu, stub)
-    elif nn_params.act_fu == SIGMOID:
-        py_pack(b_c, push_fl, nn_params.alpha_sigmoid)
-        py_pack(b_c,determe_alpha_sigmoid, stub)
-    elif nn_params.act_fu == TAN:
-        py_pack(b_c, push_fl, nn_params.alpha_tan)
-        py_pack(b_c, push_fl, nn_params.beta_tan)
-        py_pack(b_c, determe_alpha_and_beta_tan, stub)
-    for i in range(len_lst):
-        in_=list_[i].in_
-        out=list_[i].out
-        py_pack(b_c, push_i,in_)
-        py_pack(b_c, push_i,out)
-        copy_matrixAsStaticSquare_toRibon(list_[i].matrix, matrix, in_, out)
-        for j in range(in_ * out):
-            py_pack(b_c, push_fl, matrix[j])
-        py_pack(b_c, make_kernel, stub)
-    dump_bc(b_c, f_name)
 #----------------------------------------------------------------------

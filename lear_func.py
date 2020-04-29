@@ -1,4 +1,3 @@
-# nn_app.[py]
 import math
 import numpy as np
 import struct as st

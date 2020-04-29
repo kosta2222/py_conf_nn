@@ -61,24 +61,24 @@ class TestLay(u.TestCase):
         # устанавливаю параметры
         nn_params = create_nn_params()
         nn_params.with_bias = False
-        nn_params.with_adap_lr = False
+        nn_params.with_adap_lr = True
         nn_params.lr = 0.01
-        nn_params.act_fu = SIGMOID
+        nn_params.act_fu = RELU
         nn_params.alpha_sigmoid=0.56
         nn_map = (2, 3, 1)
 
         X = [[1, 1], [1, 0], [0, 1], [0, 0]]
         Y_and = [[1], [1], [1], [0]]
 
-        b_c = [0] * bc_bufLen  # буффер для сериализации матричных элементов и входов
+        b_c_new = [0] * bc_bufLen  # буффер для сериализации матричных элементов и входов
         initiate_layers(nn_params, nn_map, len(nn_map))
-        fit(b_c, nn_params, 7, X, Y_and, 100)
+        fit(b_c_new, nn_params, 7, X, Y_and, 100)
 
         print("in test_1 after learn. matr")
         for i in nn_params.list_:
             print(i.matrix)
         # сериализуем
-        compil_serializ(nn_params, b_c, nn_params.list_, len(nn_map) - 1, "weight_file" )
+        compil_serializ(nn_params, b_c_new, nn_params.list_, len(nn_map) - 1, "weight_file" )
 
         # десериализуем
         nn_params_new = create_nn_params()
