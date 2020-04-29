@@ -1,58 +1,101 @@
+from NN_params import NnParams   # импортруем параметры сети
+from serial_deserial_func import deserializ
+from nn_constants import bc_bufLen, RELU, LEAKY_RELU, SIGMOID, TAN
+from lear_func import initiate_layers, answer_nn_direct, answer_nn_direct_on_contrary
+from serial_deserial_func import compil_serializ
+from fit import fit
+
+# создать параметры сети
+def create_nn_params():
+    return NnParams()
+
+
 def turn_on_lamp():
     print("Lampa vkluchena!")
 
 
 len_=10
+
 push_i = 0
 push_fl = 1
 push_str = 2
-r = 3
+calc_vecs = 3
+fit_ = 4
+stop = 5
 
-ops=["r","push_i","push_str","push_fl"]
+ops=["push_i","push_fl", "push_str", "calc_vecs","fit"]
 def console():
-    global b_c
-    input_ = ""
-    # splitted_cmd и splitted_cmd_src - т.к. работаем со статическим массивом
-    splitted_cmd: list = [''] * 2
-    splitted_cmd_src:list = None
-    main_cmd = '<uninitialized>'
-    par_cmd = '<uninitialized>'
-    idex_of_bytecode_is_bytecode = 0
-    cmd_in_ops = '<uninitialized>'
-    pos_bytecode = -1
-    shell_is_running = True
-    print("Zdravstvuite ya sostavitel bait-coda dla etoi programmi")
-    print("Dostupnie codi")
-    for c in ops:
-        print(c, end=' ')
-    print()
-    while shell_is_running:
-        
-        input_ = input(">>>")
-        if input_== "r":
-            break
-        
-        splitted_cmd_src = input_.split()
-        for pos_to_write in range(len(splitted_cmd_src)):
-            splitted_cmd[pos_to_write] = splitted_cmd_src[pos_to_write]
-        main_cmd = splitted_cmd[0]
-        par_cmd = splitted_cmd[1]
-        # Ищем код в списке код-строку
-        for idex_of_bytecode_is_bytecode in range(len(ops)):
-            cmd_in_ops = ops[idex_of_bytecode_is_bytecode]
-            if cmd_in_ops == main_cmd:
-                pos_bytecode += 1
-                # формируем числовой байт-код и если нужно значения параметра
-                b_c[pos_bytecode] = idex_of_bytecode_is_bytecode
-                if par_cmd != '':
-                    pos_bytecode += 1
-                    b_c[pos_bytecode] = par_cmd
-            # Очищаем
-            splitted_cmd[0] = ''
-            splitted_cmd[1] = ''
-        pos_bytecode= + 1
+        b_c = [0] * len_
+        input_ = ""
+        # splitted_cmd и splitted_cmd_src - т.к. работаем со статическим массивом
+        splitted_cmd: list = [''] * 2
+        splitted_cmd_src:list = None
+        main_cmd = '<uninitialized>'
+        par_cmd = '<uninitialized>'
+        idex_of_bytecode_is_bytecode = 0
+        cmd_in_ops = '<uninitialized>'
+        pos_bytecode = -1
+        shell_is_running = True
+        exit_flag = False
+        # while shell_is_running:
+        print("Zdravstvuite ya sostavitel bait-coda dla etoi programmi")
+        print("r vipolnit")
+        print("Naberite exit dlya vihoda")
+        print("Dostupnie codi:")
+        for c in ops:
+            print(c, end=' ')
+        print()
+        while shell_is_running:
 
+            input_ = input(">>>")
+            # полностью выходим из программы
+            if input_== "exit":
+                # exit_flag = True
+                break
+            # выполняем байткод вирт-машиной
+            elif input_== "r":
+                pos_bytecode+= 1
+                b_c[pos_bytecode] = stop
+                print("b_c",b_c)
+                vm_proc_to_learn(b_c)
+                # b_c.clear()
+                # print("b_c2",b_c)
+                pos_bytecode = -1
+            splitted_cmd_src = input_.split()
+            for pos_to_write in range(len(splitted_cmd_src)):
+                splitted_cmd[pos_to_write] = splitted_cmd_src[pos_to_write]
+            main_cmd = splitted_cmd[0]
+            par_cmd = splitted_cmd[1]
+            # Ищем код в списке код-строку
+            for idex_of_bytecode_is_bytecode in range(len(ops)):
+                cmd_in_ops = ops[idex_of_bytecode_is_bytecode]
+                if cmd_in_ops == main_cmd:
+                    pos_bytecode += 1
+                    # формируем числовой байт-код и если нужно значения параметра
+                    b_c[pos_bytecode] = idex_of_bytecode_is_bytecode
+                    if par_cmd != '':
+                        pos_bytecode += 1
+                        b_c[pos_bytecode] = par_cmd
+                # Очищаем
+                splitted_cmd[0] = ''
+                splitted_cmd[1] = ''
+            # pos_bytecode+= 1
+            # if exit_flag:
+            #    break
+    # print("bye)")
+X=[]
+Y=[]
 def vm_proc_to_learn(b_c:list):
+    nn_params = create_nn_params()
+    nn_params.with_bias = False
+    nn_params.with_adap_lr = True
+    nn_params.lr = 0.01
+    nn_params.act_fu = SIGMOID
+    nn_params.alpha_sigmoid = 0.056
+    nn_in_amount = 20
+    nn_map = (nn_in_amount, 8, 2)
+    initiate_layers(nn_params, nn_map, len(nn_map))
+
     ip=0
     sp=-1
     sp_str=-1
@@ -75,6 +118,39 @@ def vm_proc_to_learn(b_c:list):
             sp_str+= 1
             ip += 1
             steck_str[sp_str] = b_c[ip]
-        elif op == r:
-            break
+        #  вычисление векторов это еще добавление к тренировочным матрицам
+        elif op==calc_vecs:
+            ord_as_devided_val = 0.0
+            float_x = []
+            str_y = [0, 1]
+            Y.append(str_y)
+            str_x=steck_str[sp_str]
+            sp_str-=1
+            for chr in str_x:
+                ord_as_devided_val = ord(chr) / 255
+                float_x.append(ord_as_devided_val)
+            X.append(float_x)
+
+            print("in vm in calc_ve:",X,Y)
+        elif op==stop:
+            return
+
+        elif op == fit_:
+           X_new =[]
+           x_new = [0] * nn_in_amount
+           for i in range(len(X)):
+               X_new.append(x_new)
+
+           for row in range(len(X)):
+               for elem in range(len(X[row])):
+                   X_new[row][elem] = X[row][elem]
+           fit(None, nn_params, 10, X_new, Y, 100)
+           X_new.clear()
+        else:
+            print("Unknown bytecode -> %d"%op)
+            return
+        ip+= 1
+        op = b_c[ip]
        
+if __name__ == '__main__':
+    console()
