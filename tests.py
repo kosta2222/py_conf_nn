@@ -63,8 +63,8 @@ class TestLay(u.TestCase):
         nn_params.with_bias = False
         nn_params.with_adap_lr = True
         nn_params.lr = 0.01
-        nn_params.act_fu = RELU
-        nn_params.alpha_sigmoid=0.56
+        nn_params.act_fu = SIGMOID
+        nn_params.alpha_sigmoid= 0.056
         nn_map = (2, 3, 1)
 
         X = [[1, 1], [1, 0], [0, 1], [0, 0]]
