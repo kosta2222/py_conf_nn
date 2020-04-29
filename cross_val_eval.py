@@ -20,16 +20,17 @@ def evaluate(nn_params:NnParams, X_test: list, Y_test: list):
     n = 0
     elem_of_out_nn = 0
     answer = 0
-    for i in range(rows):
-        x_test = X_test[i]
-        y_test = Y_test[i]
+    vecs_are_equal = False
+    for row in range(rows):
+        x_test = X_test[row]
+        y_test = Y_test[row]
         # print("in cross val x_test",x_test)
         out_nn=answer_nn_direct(nn_params, x_test, 1)
         # print("in cross val out_nn",out_nn)
         # res=check_oneHotVecs(scores, out_nn, y_test, len(y_test))
-        for i in range(wi_y_test):
-            elem_of_out_nn = out_nn[i]
-            answer = y_test[i]
+        for elem in range(wi_y_test):
+            elem_of_out_nn = out_nn[elem]
+            answer = y_test[elem]
             if (elem_of_out_nn > 0.5):
                 elem_of_out_nn = 1
                 print("output vector[ %f ] " % 1, end=' ')
@@ -38,9 +39,17 @@ def evaluate(nn_params:NnParams, X_test: list, Y_test: list):
                 print("output vector[ %f ] " % 0, end=' ');
             print("expected [ %f ]\n" % answer);
             if elem_of_out_nn == answer:
-                scores.append(1)
+                vecs_are_equal = True
             else:
-                scores.append(0)
+                vecs_are_equal = False
+                break
+        if vecs_are_equal:
+           scores.append(1)
+        else:
+            scores.append(0)
+            # elem_of_out_nn = 0
+    print("in eval scores",scores)
+
     res_acc = sum(scores) / rows * 100
     print("Acсuracy:%f%s"%(res_acc,"%"))
     return res_acc
