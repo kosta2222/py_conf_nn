@@ -1,6 +1,6 @@
 from nn_constants import RELU_DERIV, RELU, TRESHOLD_FUNC, TRESHOLD_FUNC_DERIV, LEAKY_RELU, LEAKY_RELU_DERIV,\
 SIGMOID, SIGMOID_DERIV, DEBUG, DEBUG_STR, INIT_W_HE, INIT_W_GLOROT_MY, INIT_W_HABR, INIT_W_MY, INIT_W_UNIFORM,\
-    TAN, TAN_DERIV, INIT_W_HE_MY
+    TAN, TAN_DERIV, INIT_W_HE_MY, SIGMOID_VER1, SIGMOID_VER1_MEASURE
 from NN_params import NnParams
 import numpy as np
 import math
@@ -46,6 +46,12 @@ def operations( op , a, b, c, d, str_, nn_params:NnParams):
         return 2.0 / (1 + math.exp(alpha_sigmoid * (-a)))
     elif op == SIGMOID_DERIV:
         return  2.0 / (1 + math.exp(alpha_sigmoid * (-a)))*(1 - 2.0 / (1 + math.exp(alpha_sigmoid * (-a))))
+    elif op == SIGMOID_VER1:
+        return 1.0 / (1 + math.exp(alpha_sigmoid * (-a)))
+    elif op == SIGMOID_VER1_MEASURE:
+        x = a
+        err = c
+        return x * (1 - x) * err
     elif op == DEBUG:
         print("%s : %f\n"%( str, a))
     elif op == INIT_W_HABR:

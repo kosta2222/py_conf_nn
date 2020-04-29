@@ -21,13 +21,13 @@ def calc_out_error(nn_params:NnParams,objLay:nnLay, targets:list):
     :return:
     """
     for row in range(objLay.out):
-        nn_params.out_errors[row] = (objLay.hidden[row] - targets[row]) * operations(nn_params.act_fu + 1, objLay.cost_signals[row], 0.42, 0, 0, "", nn_params)
+        nn_params.out_errors[row] = (objLay.hidden[row] - targets[row]) * operations(nn_params.act_fu + 1, objLay.cost_signals[row], 0.42, nn_params.out_errors[row], 0, "", nn_params)
 
 
 def calc_hid_error(nn_params:NnParams, objLay:nnLay, essential_gradients:list, entered_vals:list):
     for elem in range(objLay.in_):
         for row in range(objLay.out):
-            objLay.errors[elem]+=essential_gradients[row] * objLay.matrix[row][elem]  * operations(nn_params.act_fu + 1, entered_vals[elem], 0, 0, 0, "", nn_params)
+            objLay.errors[elem]+=essential_gradients[row] * objLay.matrix[row][elem]  * operations(nn_params.act_fu + 1, entered_vals[elem], essential_gradients[row], 0, 0, "", nn_params)
     # print("in calc_hid_error essential_gradients",essential_gradients)
     # print("in calc_hid_error entered_vals",entered_vals)
     # print("in calc_hid_error errors",objLay.errors)
