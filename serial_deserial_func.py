@@ -25,37 +25,37 @@ def py_pack (b_c:list, op_i, val_i_or_fl):
     'determe_alpha_sigmoid', 'determe_alpha_and_beta_tan', 'stop']  # отпечатка команд [для отладки]
     print("in py_pack op",ops_name[op_i],"val_i_or_fl",val_i_or_fl)
     if op_i == push_fl:
-        b_c[p] = st.pack('B', push_fl)
+        b_c[pos_bytecode] = st.pack('B', push_fl)
         pos_bytecode+=1
         for i in st.pack('<f', val_i_or_fl):
-            b_c[p] = i.to_bytes(1, 'little')
+            b_c[pos_bytecode] = i.to_bytes(1, 'little')
             pos_bytecode+=1
 
     elif op_i == push_i:
-        b_c[p] = st.pack('B', push_i)
+        b_c[pos_bytecode] = st.pack('B', push_i)
         pos_bytecode+=1
-        b_c[p] = st.pack('B', val_i_or_fl)
+        b_c[pos_bytecode] = st.pack('B', val_i_or_fl)
         pos_bytecode+=1
     elif op_i == make_kernel:
-        b_c[p] = st.pack('B', make_kernel)
+        b_c[pos_bytecode] = st.pack('B', make_kernel)
         pos_bytecode+=1
     elif op_i == with_bias:
-        b_c[p] = st.pack('B', with_bias)
+        b_c[pos_bytecode] = st.pack('B', with_bias)
         pos_bytecode+=1
     elif op_i == with_bias:
-        b_c[p] = st.pack('B', with_bias)
+        b_c[pos_bytecode] = st.pack('B', with_bias)
         pos_bytecode+=1
     elif op_i == determe_act_func:
-        b_c[p] = st.pack('B', determe_act_func)
+        b_c[pos_bytecode] = st.pack('B', determe_act_func)
         pos_bytecode+=1
     elif op_i == determe_alpha_leaky_relu:
-        b_c[p] = st.pack('B', determe_alpha_leaky_relu)
+        b_c[pos_bytecode] = st.pack('B', determe_alpha_leaky_relu)
         pos_bytecode+=1
     elif op_i == determe_alpha_sigmoid:
-        b_c[p] = st.pack('B', determe_alpha_sigmoid)
+        b_c[pos_bytecode] = st.pack('B', determe_alpha_sigmoid)
         pos_bytecode+=1
     elif op_i == determe_alpha_and_beta_tan:
-        b_c[p] = st.pack('B', determe_alpha_and_beta_tan)
+        b_c[pos_bytecode] = st.pack('B', determe_alpha_and_beta_tan)
         pos_bytecode+=1
 
 
@@ -63,10 +63,11 @@ def py_pack (b_c:list, op_i, val_i_or_fl):
 
 def  dump_bc(b_c, f_name):
   global pos_bytecode
-  b_c[p] = stop.to_bytes(1,"little")
+  b_c[pos_bytecode] = stop.to_bytes(1,"little")
   pos_bytecode+=1
   with open(f_name,'wb') as f:
-     for i in range(p):
+     len_bytecode = pos_bytecode
+     for i in range(len_bytecode):
          f.write(b_c[i])
 
 

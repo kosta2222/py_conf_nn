@@ -141,13 +141,13 @@ def make_hidden(nn_params, objLay:nnLay, inputs:list, debug):
                   tmp_v+=objLay.matrix[row][elem] *\
                          inputs[elem]
             else:
-                tmp_v+=objLay.matrix[row][elem] * inputs[elem]
+                tmp_v+=objLay.matrix[row][elem] *\
+                       inputs[elem]
 
         objLay.cost_signals[row] = tmp_v
         val = operations(nn_params.act_fu,tmp_v, 0, 0, 0, "", nn_params)
         objLay.hidden[row] = val
         tmp_v = 0
-        val = 0
     # print("in make_hidden e",objLay.cost_signals)
     # print("in make_hidden h",objLay.hidden)
     # print("in make_hidden matrix state",objLay.matrix)
@@ -201,7 +201,7 @@ def set_io(nn_params:NnParams, objLay:nnLay, inputs, outputs):
     objLay.out=outputs
     for row in range(outputs):
         for elem in range(inputs):
-            objLay.matrix[row][elem] = operations(INIT_W_HE_MY, inputs+1, outputs, 0, 0, "", nn_params)
+            objLay.matrix[row][elem] = operations(INIT_W_MY, inputs+1, outputs, 0, 0, "", nn_params)
     # print("in set_io matrix", objLay.matrix)
 
 

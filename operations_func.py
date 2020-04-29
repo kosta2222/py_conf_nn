@@ -45,7 +45,7 @@ def operations( op , a, b, c, d, str_, nn_params:NnParams):
     elif op == SIGMOID:
         return 2.0 / (1 + math.exp(alpha_sigmoid * (-a)))
     elif op == SIGMOID_DERIV:
-        return b * 2.0 / (1 + math.exp(alpha_sigmoid * (-a)))*(1 - 2.0 / (1 + math.exp(alpha_sigmoid * (-a))))
+        return  2.0 / (1 + math.exp(alpha_sigmoid * (-a)))*(1 - 2.0 / (1 + math.exp(alpha_sigmoid * (-a))))
     elif op == DEBUG:
         print("%s : %f\n"%( str, a))
     elif op == INIT_W_HABR:
@@ -53,17 +53,16 @@ def operations( op , a, b, c, d, str_, nn_params:NnParams):
     elif op == INIT_W_HE:
         return np.random.randn() * math.sqrt(2 / a)
     elif op == INIT_W_HE_MY:
-        return np.random.randn() * math.sqrt(2 / a)
         if ready:
             ready = False
             return -math.sqrt(2 / a) * 0.567141530112327
         ready = True
         return math.sqrt(2 / a) * 0.567141530112327
     elif op == INIT_W_MY:
-        if ready:
-            ready = False
-            return -0.567141530112327
-        ready = True
+        # if ready:
+        #     ready = False
+        #     return -0.467141530112327
+        # ready = True
         return 0.567141530112327
     elif op ==INIT_W_GLOROT_MY:
         if ready:
