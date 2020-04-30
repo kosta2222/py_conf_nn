@@ -24,12 +24,13 @@ len_=10
 push_i = 0
 push_fl = 1
 push_str = 2
-calc_vecs = 3
-fit_ = 4
-recogn = 5
-stop = 6
+calc_sent_vecs = 3
+calc_one_h_vecs = 4
+fit_ = 5
+recogn = 6
+stop = 7
 
-ops=["push_i","push_fl", "push_str", "calc_vecs","fit","recogn"]
+ops=["push_i","push_fl", "push_str", "calc_sent_vecs","calc_one_h_vecs","fit","recogn"]
 def console():
         b_c = [0] * len_* 3
         input_ = ""
@@ -42,6 +43,7 @@ def console():
         cmd_in_ops = '<uninitialized>'
         pos_bytecode = -1
         shell_is_running = True
+        is_we_didnt_faind_opcode = True
         # exit_flag = False
         # while shell_is_running:
         print("Zdravstvuite ya sostavitel bait-coda dla etoi programmi")
@@ -75,16 +77,26 @@ def console():
             # Ищем код в списке код-строку
             for idex_of_bytecode_is_bytecode in range(len(ops)):
                 cmd_in_ops = ops[idex_of_bytecode_is_bytecode]
-                if cmd_in_ops == main_cmd:
+                is_index_inside_arr = idex_of_bytecode_is_bytecode <= (len(ops) - 1)
+                if cmd_in_ops == main_cmd and is_index_inside_arr:
                     pos_bytecode += 1
                     # формируем числовой байт-код и если нужно значения параметра
                     b_c[pos_bytecode] = idex_of_bytecode_is_bytecode
                     if par_cmd != '':
                         pos_bytecode += 1
                         b_c[pos_bytecode] = par_cmd
+                    is_we_didnt_faind_opcode = False
+                    break
+
+                else :
+                    is_we_didnt_faind_opcode =True
+                    continue
                 # Очищаем
                 splitted_cmd[0] = ''
                 splitted_cmd[1] = ''
+            if is_we_didnt_faind_opcode:
+                print("Izvintilyaus Net takogo opcoda")
+                is_we_didnt_faind_opcode = False
             # pos_bytecode+= 1
             # if exit_flag:
             #    break
@@ -96,10 +108,11 @@ def vm_proc_to_learn(b_c:list):
     nn_params.with_bias = False
     nn_params.with_adap_lr = True
     nn_params.lr = 0.01
-    nn_params.act_fu = TAN
+    nn_params.act_fu = RELU
     nn_params.alpha_sigmoid = 0.056
     nn_in_amount = 20
-    nn_map = (nn_in_amount, 8, 2)
+    nn_out_amount = 10
+    nn_map = (nn_in_amount, 8, nn_out_amount)
     initiate_layers(nn_params, nn_map, len(nn_map))
 
     ip=0
@@ -125,7 +138,7 @@ def vm_proc_to_learn(b_c:list):
             ip += 1
             steck_str[sp_str] = b_c[ip]
         #  вычисление векторов это еще добавление к тренировочным матрицам
-        elif op==calc_vecs:
+        elif op==calc_sent_vecs:
             ord_as_devided_val = 0.0
             float_x = [0] * nn_in_amount
             str_y = [0, 1]
@@ -140,19 +153,42 @@ def vm_proc_to_learn(b_c:list):
             X.append(float_x)
 
             print("in vm in calc_ve:",X,Y)
+        elif op == calc_one_h_vecs:
+            splited_par_x:list=None
+            splited_par_y:list=None
+            x = [0] * nn_in_amount
+            y = [0] * nn_out_amount
+            str_par_y = steck_str[sp_str]
+            sp_str-= 1
+            str_par_x = steck_str[sp_str]
+            sp_str-= 1
+            splited_par_x=str_par_x.split("_")
+            splited_par_y=str_par_y.split("_")
+            for i in range(len(splited_par_x)):
+                x[i]=str_par_x[i]
+            for i in range(len(splited_par_y)):
+                y[i]=str_par_x[i]
+            X.append(x)
+            Y.append(y)
         elif op==stop:
             return
-
         elif op == fit_:
-           X_new =[]
+           X_new_fix =[]
+           Y_new_fix =[]
            x_new = [0] * nn_in_amount
+           y_new = [0] * nn_out_amount
            for i in range(len(X)):
-               X_new.append(x_new)
+               X_new_fix.append(x_new)
+           for i in range(len(Y)):
+               Y_new_fix.append(y_new)
 
            for row in range(len(X)):
                for elem in range(nn_in_amount):
-                   X_new[row][elem] = X[row][elem]
-           fit(None, nn_params, 10, X_new, Y, 100)
+                   X_new_fix[row][elem] = X[row][elem]
+           for row in range(len(Y)):
+               for elem in range(nn_out_amount):
+                   Y_new_fix[row][elem] = Y[row][elem]
+           fit(None, nn_params, 10, X_new_fix, Y_new_fix, 100)
            # X_new.clear()
         elif op == recogn:
             float_x = [0] * nn_in_amount
