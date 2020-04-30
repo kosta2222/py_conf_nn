@@ -3,8 +3,13 @@ from lear_func import train, initiate_layers, get_min_square_err, answer_nn_dire
 get_mean
 
 
+"""
+X и Y - означает матрицы обучения и ответов соответственно(массив с другими просто массивами)
+x*_ и  y*_ - вектор из этих матриц(просто массив)
+"""
 
-def fit(b_c:list, nn_params, epochcs, train_set:list, target_set:list, accuracy_shureness:int):
+
+def fit(b_c:list, nn_params, epochcs, X:list, Y:list, X_eval:list, Y_eval, accuracy_eval_shureness:int):
     iteration: int = 0
     A = nn_params.lr
     out_nn:list=None
@@ -13,13 +18,13 @@ def fit(b_c:list, nn_params, epochcs, train_set:list, target_set:list, accuracy_
     alpha = 0.99
     beta = 1.01
     gama = 1.01
-    hei_target_set = len(target_set)
+    hei_Y = len(Y)
     E_spec = 0
     while True:
         print("epocha:", iteration)
-        for i in range(hei_target_set):
-            x = train_set[i]
-            y = target_set[i]
+        for i in range(hei_Y):
+            x = X[i]
+            y = Y[i]
             print("in learn x",x)
             print("in learn y",y)
             train(nn_params, x, y, 1)
@@ -43,12 +48,12 @@ def fit(b_c:list, nn_params, epochcs, train_set:list, target_set:list, accuracy_
             print("in learn mse",mse)
         # if mse == 0:
         #     break
-        acc = evaluate(nn_params, train_set, target_set)
-        if acc == accuracy_shureness:
+        acc = evaluate(nn_params, X, Y)
+        if acc == accuracy_eval_shureness:
             break
         iteration+=1
     print("***CV***")
-    evaluate(nn_params, train_set, target_set)
+    evaluate(nn_params, X_eval, Y_eval)
     # compil_serializ(b_c, nn_params.list_,len(nn_map)-1,"wei_wei")
 
 

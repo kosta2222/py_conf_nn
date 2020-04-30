@@ -32,7 +32,7 @@ class TestLay(u.TestCase):
 
         b_c = [0] * bc_bufLen  # буффер для сериализации матричных элементов и входов
         initiate_layers(nn_params, nn_map, len(nn_map))
-        fit(b_c, nn_params, 7, X, Y_or, 100)
+        fit(b_c, nn_params, 7, X, Y_or, X, Y_or, 100)
 
         print("in test_1 after learn. matr")
         for i in nn_params.list_:
@@ -72,7 +72,7 @@ class TestLay(u.TestCase):
 
         b_c_new = [0] * bc_bufLen  # буффер для сериализации матричных элементов и входов
         initiate_layers(nn_params, nn_map, len(nn_map))
-        fit(b_c_new, nn_params, 7, X, Y_and, 100)
+        fit(b_c_new, nn_params, 7, X, Y_and, X, Y_and, 100)
 
         print("in test_1 after learn. matr")
         for i in nn_params.list_:
