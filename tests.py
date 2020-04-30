@@ -24,15 +24,17 @@ class TestLay(u.TestCase):
         nn_params.with_bias = False
         nn_params.with_adap_lr = True
         nn_params.lr = 0.01
-        nn_params.act_fu = RELU
+        nn_params.act_fu = TAN
         nn_map = (2, 3, 1)
 
         X = [[1, 1], [1, 0], [0, 1], [0, 0]]
         Y_or = [[1], [1], [1], [0]]
+        X_gist = [[0, 1/4]]
+        Y_gist = [[1/3]]
 
         b_c = [0] * bc_bufLen  # буффер для сериализации матричных элементов и входов
         initiate_layers(nn_params, nn_map, len(nn_map))
-        fit(b_c, nn_params, 7, X, Y_or, X, Y_or, 100)
+        fit(b_c, nn_params, 7, X_gist, Y_gist, X, Y_or, 100)
 
         print("in test_1 after learn. matr")
         for i in nn_params.list_:
@@ -69,10 +71,12 @@ class TestLay(u.TestCase):
 
         X = [[1, 1], [1, 0], [0, 1], [0, 0]]
         Y_and = [[1], [1], [1], [0]]
+        X_gist = [[0, 1/4]]
+        Y_gist = [[1]]
 
         b_c_new = [0] * bc_bufLen  # буффер для сериализации матричных элементов и входов
         initiate_layers(nn_params, nn_map, len(nn_map))
-        fit(b_c_new, nn_params, 7, X, Y_and, X, Y_and, 100)
+        fit(b_c_new, nn_params, 7, X_gist, Y_gist, X, Y_and, 100)
 
         print("in test_1 after learn. matr")
         for i in nn_params.list_:

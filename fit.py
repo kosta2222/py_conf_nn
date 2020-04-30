@@ -10,6 +10,9 @@ x*_ и  y*_ - вектор из этих матриц(просто массив)
 
 
 def fit(b_c:list, nn_params, epochcs, X:list, Y:list, X_eval:list, Y_eval, accuracy_eval_shureness:int):
+    """
+    X_eval и Y_eval нужны потому что X и Y могут быть 'сжаты', а проверять нужно на 'целых' матрицах
+    """
     iteration: int = 0
     A = nn_params.lr
     out_nn:list=None
@@ -48,7 +51,7 @@ def fit(b_c:list, nn_params, epochcs, X:list, Y:list, X_eval:list, Y_eval, accur
             print("in learn mse",mse)
         # if mse == 0:
         #     break
-        acc = evaluate(nn_params, X, Y)
+        acc = evaluate(nn_params, X_eval, Y_eval)
         if acc == accuracy_eval_shureness:
             break
         iteration+=1

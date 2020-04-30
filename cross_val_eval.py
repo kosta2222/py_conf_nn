@@ -19,8 +19,8 @@ def evaluate(nn_params:NnParams, X_test: list, Y_test: list):
     wi_y_test = len(Y_test[0])
     n = 0
     elem_of_out_nn = 0
-    answer = 0
-    vecs_are_equal = False
+    elem_answer = 0
+    is_vecs_are_equal = False
     for row in range(rows):
         x_test = X_test[row]
         y_test = Y_test[row]
@@ -28,24 +28,27 @@ def evaluate(nn_params:NnParams, X_test: list, Y_test: list):
         out_nn=answer_nn_direct(nn_params, x_test, 1)
         # print("in cross val out_nn",out_nn)
         # res=check_oneHotVecs(scores, out_nn, y_test, len(y_test))
+
         for elem in range(wi_y_test):
             elem_of_out_nn = out_nn[elem]
-            answer = y_test[elem]
+            elem_answer = y_test[elem]
             if (elem_of_out_nn > 0.5):
                 elem_of_out_nn = 1
-                print("output vector[ %f ] " % 1, end=' ')
+                print("output vector elem -> ( %f ) " % 1, end=' ')
             else:
                 elem_of_out_nn = 0
-                print("output vector[ %f ] " % 0, end=' ');
-            print("expected [ %f ]\n" % answer);
-            if elem_of_out_nn == answer:
-                vecs_are_equal = True
+                print("output vector elem -> ( %f ) " % 0, end=' ');
+            print("expected vector elem -> ( %f )" % elem_answer);
+            if elem_of_out_nn == elem_answer:
+                is_vecs_are_equal = True
             else:
-                vecs_are_equal = False
+                is_vecs_are_equal = False
                 break
-        if vecs_are_equal:
+        if is_vecs_are_equal:
+           print("-Vecs are equal-")
            scores.append(1)
         else:
+            print("-Vecs are not equal-")
             scores.append(0)
             # elem_of_out_nn = 0
     print("in eval scores",scores)
