@@ -206,9 +206,13 @@ def vm_proc_to_learn(b_c:list):
             cn_char = 0
             for chr in str_x:
                 ord_as_devided_val = ord(chr) / 255
-                float_x[cn_char] = ord_as_devided_val
+                float_x[cn_char] = round(ord_as_devided_val, 2)
                 cn_char+=1
             print("*In vm in recogn",answer_nn_direct(nn_params, float_x, 1))
+            nn_ans = answer_nn_direct(nn_params, float_x, 1)
+            if nn_ans[0] > 0.5:
+                turn_on_lamp()
+            print("nn answered", nn_ans)
         else:
             print("Unknown bytecode -> %d"%op)
             return
