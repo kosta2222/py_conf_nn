@@ -44,7 +44,7 @@ def console():
         cmd_in_ops = '<uninitialized>'
         pos_bytecode = -1
         shell_is_running = True
-        is_we_didnt_faind_opcode = True
+        is_we_didnt_faind_opcode = False
         # exit_flag = False
         # while shell_is_running:
         print("Zdravstvuite ya sostavitel bait-coda dla etoi programmi")
@@ -108,10 +108,10 @@ X=[]
 Y=[]
 def vm_proc_to_learn(b_c:list):
     nn_params = create_nn_params()
-    nn_params.with_bias = False
+    nn_params.with_bias = True
     nn_params.with_adap_lr = True
     nn_params.lr = 0.01
-    nn_params.act_fu = RELU
+    nn_params.act_fu = TAN
     nn_params.alpha_sigmoid = 0.056
     nn_in_amount = 20
     nn_out_amount = 1
@@ -195,9 +195,13 @@ def vm_proc_to_learn(b_c:list):
                    Y_new_fix[row][elem] = Y[row][elem]
            X_new_fix_np=np.array(X_new_fix, dtype='float64')
            Y_new_fix_np=np.array(Y_new_fix, dtype='float64')
-           X_new_fix_np-=np.mean(X_new_fix, dtype='float64')
-           Y_new_fix_np-=np.mean(Y_new_fix, dtype='float64')
-           fit(None, nn_params, 10, X_new_fix_np.tolist(), Y_new_fix_np.tolist(), X_new_fix, Y_new_fix, 100)
+           # X_new_fix_np-=np.mean(X_new_fix_np, dtype='float64', axis=0)
+           # Y_new_fix_np-=np.mean(Y_new_fix_np, dtype='float64', axis=0)
+           # X_new_fix_np=np.std(X_new_fix_np, axis = 0)
+           # Y_new_fix_np=np.std(Y_new_fix_np, axis = 0)
+           print("in calc sent vecs X Y", X_new_fix_np, Y_new_fix_np)
+
+           fit(None, nn_params, 10, X_new_fix, Y_new_fix, X_new_fix, Y_new_fix, 100)
            # X_new.clear()
         elif op == recogn:
             float_x = [0] * nn_in_amount
@@ -212,7 +216,10 @@ def vm_proc_to_learn(b_c:list):
             nn_ans = answer_nn_direct(nn_params, float_x, 1)
             if nn_ans[0] > 0.5:
                 turn_on_lamp()
-            print("nn answered", nn_ans)
+                print("nn answered", nn_ans)
+            else:
+                print("Izvinite prosba ne opoznana")
+                print("nn answered", nn_ans)
         else:
             print("Unknown bytecode -> %d"%op)
             return

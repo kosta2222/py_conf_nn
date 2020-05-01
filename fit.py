@@ -52,7 +52,7 @@ def fit(b_c:list, nn_params, epochcs, X:list, Y:list, X_eval:list, Y_eval, accur
         # if mse == 0:
         #     break
         acc = evaluate(nn_params, X_eval, Y_eval)
-        if acc == accuracy_eval_shureness:
+        if acc == accuracy_eval_shureness and mse < 0.001:
             break
         iteration+=1
     print("***CV***")
