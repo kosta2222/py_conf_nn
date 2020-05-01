@@ -117,6 +117,7 @@ def vm_proc_to_learn(b_c:list):
     nn_out_amount = 1
     nn_map = (nn_in_amount, 8, nn_out_amount)
     initiate_layers(nn_params, nn_map, len(nn_map))
+    b_c_new = [0] * bc_bufLen  # буффер для сериализации матричных элементов и входов
 
     ip=0
     sp=-1
@@ -201,7 +202,9 @@ def vm_proc_to_learn(b_c:list):
            # Y_new_fix_np=np.std(Y_new_fix_np, axis = 0)
            print("in calc sent vecs X Y", X_new_fix_np, Y_new_fix_np)
 
-           fit(None, nn_params, 10, X_new_fix, Y_new_fix, X_new_fix, Y_new_fix, 100)
+           fit(b_c, nn_params, 10, X_new_fix, Y_new_fix, X_new_fix, Y_new_fix, 100)
+           compil_serializ(nn_params, b_c, nn_params.list_, len(nn_map) - 1, "weight_file")
+
            # X_new.clear()
         elif op == recogn:
             float_x = [0] * nn_in_amount
@@ -212,9 +215,17 @@ def vm_proc_to_learn(b_c:list):
                 ord_as_devided_val = ord(chr) / 255
                 float_x[cn_char] = round(ord_as_devided_val, 2)
                 cn_char+=1
+
+
+
+
+            # десериализуем
+            nn_params_new = create_nn_params()
+            deserializ(nn_params_new, nn_params_new.list_, "weight_file")
             print("*In vm in recogn",answer_nn_direct(nn_params, float_x, 1))
-            nn_ans = answer_nn_direct(nn_params, float_x, 1)
-            if nn_ans[0] > 0.5:
+            deserializ(nn_params_new, nn_params_new.list_, "weight_file")
+            nn_ans = answer_nn_direct(nn_params_new, float_x, 1)
+            if nn_ans[0] >  0.559837 and nn_ans[0] <= 1:
                 turn_on_lamp()
                 print("nn answered", nn_ans)
             else:
