@@ -107,7 +107,7 @@ class TestLay(u.TestCase):
         nn_params.with_bias = True
         nn_params.with_adap_lr = False
         nn_params.lr = 0.01
-        nn_params.act_fu = SIGMOID
+        nn_params.act_fu = RELU
         nn_params.alpha_leaky_relu = 0.01
         nn_params.alpha_sigmoid= 0.056
         nn_map = (3, 2, 1)
@@ -115,16 +115,19 @@ class TestLay(u.TestCase):
         X = [[0, 0, 0], [0, 1, 1], [0, 0, 1], [1, 1, 1],[0, 1, 0]]
         Y = [[0], [1], [1], [1],[0]]
 
-        X_np=np.array(X)
-        Y_np=np.array(Y)
+        X_np=np.array(X, dtype='float64')
+        Y_np=np.array(Y, dtype='float64')
 
-        X_np=np.mean(X_np, axis=1)
-        Y_np=np.mean(Y_np, axis=1)
+        X_np-=np.mean(X_np, axis=0, dtype='float64')
+        Y_np-=np.mean(Y_np, axis=0, dtype='float64')
+
+        X_np=[np.std(X_np, axis=0)]
+        Y_np=[np.std(Y_np, axis=0)]
         X_my = [[1, 1/3, 1/3]]
         Y_my = [[1/3]]
         b_c_new = [0] * bc_bufLen  # буффер для сериализации матричных элементов и входов
         initiate_layers(nn_params, nn_map, len(nn_map))
-        fit(b_c_new, nn_params, 7, X_my, Y_my, X, Y, 60)
+        fit(b_c_new, nn_params, 7, X_np, Y_np, X, Y, 100)
 
         print("in test_1 after learn. matr")
         for i in nn_params.list_:

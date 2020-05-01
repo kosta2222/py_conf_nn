@@ -4,6 +4,7 @@ from nn_constants import bc_bufLen, RELU, LEAKY_RELU, SIGMOID, TAN
 from lear_func import initiate_layers, answer_nn_direct, answer_nn_direct_on_contrary
 from serial_deserial_func import compil_serializ
 from fit import fit
+import numpy as np
 """
 X и Y означают двухмернй список обучения и ответов соответственно
 x_* и y_* - просто списки из этих матриц
@@ -85,6 +86,9 @@ def console():
                     if par_cmd != '':
                         pos_bytecode += 1
                         b_c[pos_bytecode] = par_cmd
+                    splitted_cmd[0] = ''
+                    splitted_cmd[1] = ''
+
                     is_we_didnt_faind_opcode = False
                     break
 
@@ -92,8 +96,7 @@ def console():
                     is_we_didnt_faind_opcode =True
                     continue
                 # Очищаем
-                splitted_cmd[0] = ''
-                splitted_cmd[1] = ''
+
             if is_we_didnt_faind_opcode:
                 print("Izvintilyaus Net takogo opcoda")
                 is_we_didnt_faind_opcode = False
@@ -111,7 +114,7 @@ def vm_proc_to_learn(b_c:list):
     nn_params.act_fu = RELU
     nn_params.alpha_sigmoid = 0.056
     nn_in_amount = 20
-    nn_out_amount = 10
+    nn_out_amount = 1
     nn_map = (nn_in_amount, 8, nn_out_amount)
     initiate_layers(nn_params, nn_map, len(nn_map))
 
@@ -141,14 +144,14 @@ def vm_proc_to_learn(b_c:list):
         elif op==calc_sent_vecs:
             ord_as_devided_val = 0.0
             float_x = [0] * nn_in_amount
-            str_y = [0, 1]
+            str_y = [1]
             Y.append(str_y)
             str_x=steck_str[sp_str]
             sp_str-=1
             cn_char = 0
             for chr in str_x:
                 ord_as_devided_val = ord(chr) / 255
-                float_x[cn_char]= ord_as_devided_val
+                float_x[cn_char]= round(ord_as_devided_val, 2)
                 cn_char+= 1
             X.append(float_x)
 
@@ -165,9 +168,11 @@ def vm_proc_to_learn(b_c:list):
             splited_par_x=str_par_x.split("_")
             splited_par_y=str_par_y.split("_")
             for i in range(len(splited_par_x)):
-                x[i]=str_par_x[i]
+                x[i]=\
+                    splited_par_x[i]
             for i in range(len(splited_par_y)):
-                y[i]=str_par_x[i]
+                if splited_par_y[i]!='':
+                   y[i]=int(splited_par_y[i])
             X.append(x)
             Y.append(y)
         elif op==stop:
@@ -188,7 +193,11 @@ def vm_proc_to_learn(b_c:list):
            for row in range(len(Y)):
                for elem in range(nn_out_amount):
                    Y_new_fix[row][elem] = Y[row][elem]
-           fit(None, nn_params, 10, X_new_fix, Y_new_fix, 100)
+           X_new_fix_np=np.array(X_new_fix, dtype='float64')
+           Y_new_fix_np=np.array(Y_new_fix, dtype='float64')
+           X_new_fix_np-=np.mean(X_new_fix, dtype='float64')
+           Y_new_fix_np-=np.mean(Y_new_fix, dtype='float64')
+           fit(None, nn_params, 10, X_new_fix_np.tolist(), Y_new_fix_np.tolist(), X_new_fix, Y_new_fix, 100)
            # X_new.clear()
         elif op == recogn:
             float_x = [0] * nn_in_amount
